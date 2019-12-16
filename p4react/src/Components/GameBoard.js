@@ -16,8 +16,14 @@ class GameBoard extends React.Component {
             symbol: "X",
             winner: null
         };
+        this.basicState = this.state;
 
         this.getGameFields = this.getGameFields.bind(this);
+    }
+
+    resetGame = () => {
+        this.setState(this.basicState);
+        alert("Game has been reset!");
     }
 
 
@@ -127,8 +133,7 @@ class GameBoard extends React.Component {
                 justify="center"
                 alignItems="center"
                 >
-
-                        <h3>Winner: {calculateWinner(this.state.fields)}</h3>
+                    <h3>Winner: {calculateWinner(this.state.fields)}</h3>
             </Grid>
 
             <Grid
@@ -137,11 +142,19 @@ class GameBoard extends React.Component {
                 justify="center"
                 alignItems="center"
                 >
+                    
+                <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
+                <div onClick={this.resetGame}>
+                    <Button variant="contained" color="default">
+                        Reset Game
+                    </Button>
+                </div>
                 <div onClick={() => alert('Not yet implemented!')}>
                     <Button variant="contained" color="primary">
                         Return to Menu
                     </Button>
                 </div>
+                </ButtonGroup>
             </Grid>
         </div>
         );
