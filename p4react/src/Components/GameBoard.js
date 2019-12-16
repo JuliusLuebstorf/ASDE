@@ -14,7 +14,8 @@ class GameBoard extends React.Component {
             fields: Array(9).fill(null),
             player: "1",
             symbol: "X",
-            winner: null
+            winner: null,
+            clickCount: 0
         };
         this.basicState = this.state;
 
@@ -39,7 +40,8 @@ class GameBoard extends React.Component {
             this.setState({winner: targetField})
             this.render();
             return;
-          }
+          } 
+
         if (this.state.player=="1") {
             targetField[index] = "X"
             this.setState({player: "2", symbol: "O"})
@@ -47,13 +49,14 @@ class GameBoard extends React.Component {
             targetField[index] = "O"
             this.setState({player:"1", symbol: "X"})
         }
-        this.setState({fields: targetField});
+        let count = this.state.clickCount + 1;
+        this.setState({fields: targetField, clickCount: count});
       }
 
 
     render() {
         let text =  "Player " + this.state.player + " (" + this.state.symbol + ") is next."
-        if (calculateWinner(this.state.fields)!= null) {
+        if ((calculateWinner(this.state.fields)!= null) || (this.state.clickCount == 9)) {
             text = "Game has ended!";
         }
         return (
