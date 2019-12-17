@@ -201,7 +201,7 @@ export default function Dashoboard() {
                       <AppsIcon />
                     </Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary="Tic-Tac-Toe vs. AI" />
+                  <ListItemText primary="Tic-Tac-Toe" />
                   </ListItem>
                   </div>
                   {/* More games can be added here*/}
@@ -214,15 +214,6 @@ export default function Dashoboard() {
           <Container maxWidth="lg" className={classes.container}>
             
             <Grid container spacing={3}>
-      
-              {/* Chart */}
-              <Grid item xs={12} md={8} lg={9}>
-              
-                
-              </Grid>
-            
-              {/* Leaderboard */}
-              
               <Grid item xs={12} md={4} lg={3}>
                 
               </Grid>

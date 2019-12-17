@@ -15,7 +15,7 @@ class HomeScreen extends React.Component {
                     <Grid container spacing={3}>
             
                     {/* Chart */}
-                        <Grid item xs={12} md={8} lg={9}>
+                        <Grid item xs={12} md={8} lg={6}>
                         <Paper>
                             <Typography variant="h5" component="h3">
                                Please select a game.
@@ -24,6 +24,9 @@ class HomeScreen extends React.Component {
 
                             </Typography>
                             </Paper>
+                        </Grid>
+                        <Grid item xs={12} md={4} lg={3}>
+                           {/* Part between Leaderboard and "select game"*/}
                         </Grid>
             
                     {/* Leaderboard */}

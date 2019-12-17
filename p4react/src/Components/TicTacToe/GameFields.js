@@ -4,6 +4,7 @@ import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import FingerprintRoundedIcon from '@material-ui/icons/FingerprintRounded';
 import IconButton from '@material-ui/core/IconButton';
 
+
 class GameFields extends React.Component {
 
     render() {
@@ -15,14 +16,14 @@ class GameFields extends React.Component {
                 
         } else if (this.props.value == "O") {
             return (
-            <IconButton disabled>
+            <IconButton disabled >
                 <RadioButtonUncheckedIcon/>
             </IconButton>);
         }
         else {
             return (
             <div onClick={() => this.props.onClick()}>
-            <IconButton>
+            <IconButton >
                 <FingerprintRoundedIcon/>
             </IconButton>
             </div>

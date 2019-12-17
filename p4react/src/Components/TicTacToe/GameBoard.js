@@ -38,7 +38,7 @@ class GameBoard extends React.Component {
         if (calculateWinner(targetField)) {
             let winner = calculateWinner(targetField);
             this.setState({winner: targetField})
-            this.render();
+            //this.render();
             return;
           } 
 
@@ -136,7 +136,7 @@ class GameBoard extends React.Component {
                 justify="center"
                 alignItems="center"
                 >
-                    <h3>Winner: {calculateWinner(this.state.fields)}</h3>
+                    <h3>{(calculateWinner(this.state.fields) === "X") ? "Player 1 wins!" : (calculateWinner(this.state.fields) === "O" ? "Player 2 wins!": this.state.clickCount === 9 ? "Game ends in a draw!": "")} </h3>
             </Grid>
 
             <Grid
