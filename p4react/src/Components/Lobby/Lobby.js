@@ -32,6 +32,9 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import LooksOneIcon from '@material-ui/icons/LooksOne';
 import LooksTwoIcon from '@material-ui/icons/LooksTwo';
 import Looks3Icon from '@material-ui/icons/Looks3';
+import HomeIcon from '@material-ui/icons/Home';
+import Leaderboard from './Leaderboard';
+import HomeScreen from './HomeScreen';
 
 function Copyright() {
     return (
@@ -147,9 +150,9 @@ export default function Dashoboard() {
     return (
       <div className={classes.root}>
         <CssBaseline />
-        <AppBar position="absolute" className={clsx(classes.appBar,{/*, open && classes.appBarShift*/})}>
+        <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
           <Toolbar className={classes.toolbar}>
-            {/*<IconButton
+            {<IconButton
               edge="start"
               color="inherit"
               aria-label="open drawer"
@@ -157,7 +160,7 @@ export default function Dashoboard() {
               className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
             >
               <MenuIcon />
-            </IconButton>*/}
+            </IconButton>}
             <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
               Game Lobby
             </Typography>
@@ -167,7 +170,6 @@ export default function Dashoboard() {
             </Fab>
           </Toolbar>
         </AppBar>
-        {/* DRAWER CAN BE ADDED LATER IF NECESSARY
         <Drawer
           variant="permanent"
           classes={{
@@ -181,73 +183,48 @@ export default function Dashoboard() {
             </IconButton>
           </div>
           <Divider />
-          test
-          <Divider />
-          test
-        </Drawer>
-        */}
-        <main className={classes.content}>
-          <div className={classes.appBarSpacer} />
-          <Container maxWidth="lg" className={classes.container}>
-            <Grid container spacing={3}>
-              {/* Chart */}
-              <Grid item xs={12} md={8} lg={9}>
-                <List className={classes.gameList}>
+          <List className={classes.gameList}>
+                <div onClick={() => setComponent('')}> {/* Give the component a name and call it in the if / else below */}
+                    <ListItem button>
+                      <ListItemAvatar>
+                        <Avatar>
+                          <HomeIcon />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary="Home Screen"  />
+                      </ListItem>
+                  </div>
                 <div onClick={() => setComponent('ttt')}>
-                <ListItem button>
+                <ListItem button color="primary">
                   <ListItemAvatar>
                     <Avatar>
                       <AppsIcon />
                     </Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary="Tic-Tac-Toe vs. AI" secondary="Play a game of Tic-Tac-Toe vs an unbeatable AI!" />
+                  <ListItemText primary="Tic-Tac-Toe vs. AI" />
                   </ListItem>
                   </div>
                   {/* More games can be added here*/}
-                  <div onClick={() => setComponent('')}> {/* Give the component a name and call it in the if / else below */}
-                    <ListItem button>
-                      <ListItemAvatar>
-                        <Avatar>
-                          <PanToolIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Coming soon..." secondary="More games will be available soon." />
-                      </ListItem>
-                  </div>
-                </List>
-              </Grid>
-              {/* Leaderboard */}
-              <Grid item xs={12} md={4} lg={3}>
-                <List className={classes.gameList} subheader={<ListSubheader>Leaderboard</ListSubheader>}>
-                
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <LooksOneIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary="Rank 1" secondary="Coming Soon." />
-                  </ListItem>
                   
-                    <ListItem>
-                      <ListItemAvatar>
-                        <Avatar>
-                          <LooksTwoIcon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Rank 2" secondary="Coming soon." />
-                      </ListItem>
-
-                      <ListItem>
-                      <ListItemAvatar>
-                        <Avatar>
-                          <Looks3Icon />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText primary="Rank 3" secondary="Coming soon." />
-                      </ListItem>
-
                 </List>
+        </Drawer>
+        }
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Container maxWidth="lg" className={classes.container}>
+            
+            <Grid container spacing={3}>
+      
+              {/* Chart */}
+              <Grid item xs={12} md={8} lg={9}>
+              
+                
+              </Grid>
+            
+              {/* Leaderboard */}
+              
+              <Grid item xs={12} md={4} lg={3}>
+                
               </Grid>
               {/* GameDisplay */}
               <Grid item xs={12}>
@@ -255,7 +232,7 @@ export default function Dashoboard() {
                   {/* Here the if / else have to be called to change the games */}
                 {component === 'ttt' ? <GameBoard/> : 
                 component === 'changeThisForFutureGame' ? "futureGame" : 
-                "Select a Game!"
+                <HomeScreen/>
                 }
                 </Paper>
               </Grid>
