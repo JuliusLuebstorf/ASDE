@@ -23,9 +23,12 @@ public class DemoApplicationTests {
 	@Test
 	public void contextLoads() {
 		
-		repository.save(new Player("pp", "pp", "pp", Calendar.getInstance()));
+		repository.save(new Player("name1", "email1@gmail.com", "pass"));
 		
 		assertEquals(1, repository.count());
+		
+		assertEquals(1, repository.findByName("name1").size());
+		
 		
 		repository.deleteAll();
 	}

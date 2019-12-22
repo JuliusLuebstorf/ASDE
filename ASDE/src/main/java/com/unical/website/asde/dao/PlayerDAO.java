@@ -13,6 +13,8 @@ import com.unical.website.asde.model.Player;
 public interface PlayerDAO extends CrudRepository<Player, Integer>{
 
 	List<Player> findByName(String name);
+	
+	Player findByEmail(String email);
 	List<Player> findByNameGreaterThanOrderByNameDesc(String name);
 	
 	List<Player> findByDateOfJoinGreaterThanOrderByNameDesc(Calendar date);

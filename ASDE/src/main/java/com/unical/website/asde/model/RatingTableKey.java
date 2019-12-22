@@ -9,11 +9,8 @@ import javax.persistence.ManyToOne;
 @Embeddable
 public class RatingTableKey implements Serializable{
 
-	@ManyToOne
-	
 	@Column(name = "player_id")
 	private int playerID;
-	
 	
 	@Column(name = "game_id")
 	private int gameId;

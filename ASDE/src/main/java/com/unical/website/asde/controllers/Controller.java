@@ -22,9 +22,6 @@ public class Controller {
 	@Autowired
 	private LogingService loginService;
 
-	@Autowired
-	private Game game;
-	
 	
 
 	// @RequestMapping(value="/", method = RequestMethod.GET)
@@ -36,42 +33,40 @@ public class Controller {
 
 	@GetMapping("/login")
 	@ResponseBody
-	public String login(@RequestParam String username, @RequestParam String password) {
+	public Player login(@RequestParam String email, @RequestParam String pass) {
 		// http://localhost:8080/login?username=a&password
 
-		if (username == null || username.isEmpty())
+		return loginService.login(email, pass);
+		
+		/*if (email == null || email.isEmpty())
 			return "<h1 style='color:red'>Username can not be empty</h1>";
 
-		if (loginService.login(username, password))
+		if (loginService.login(email, pass)!=null)
 			return "<h1>Success</h1>";
 
-		return "<h1 style='color:red'>Failed</h1>";
+		return "<h1 style='color:red'>Failed</h1>";*/
 	}
 
 
+
+	@CrossOrigin
+	@GetMapping("/register")
+	public String register(@RequestParam String name, @RequestParam String email, @RequestParam String pass) {
+		return loginService.register(name, email, pass);
+	}
+	
+	
+	@CrossOrigin
+	@GetMapping("/logout")
+	public boolean logout(@RequestParam String email) {
+		return loginService.logout(email);
+	}
+	
+	
+	
 	@GetMapping("/")
 	public String showJSP() {
 		return "index";
 	}
-
-	
-
-	@CrossOrigin
-	@GetMapping("/addUser")
-	public String addUser(@RequestParam String name, @RequestParam String pass, @RequestParam int coin) {
-		// http://localhost:8080/login?username=a&password
-
-		if (name == null || name.isEmpty())
-			return "<h1 style='color:red'>Username can not be empty</h1>";
-
-		// if(loginService.login(name, pass)) {
-		//game.addPlayer(name, pass, coin);
-
-		return "<h1>Success</h1>";
-		// }
-
-		// return "<h1 style='color:red'>Failed</h1>";
-	}
-	
 	
 }

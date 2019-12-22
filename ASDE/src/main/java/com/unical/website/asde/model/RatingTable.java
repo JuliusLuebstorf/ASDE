@@ -8,7 +8,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
 //https://www.baeldung.com/jpa-many-to-many
-
+// Intermedia table of relation many to many Player with Game
 @Entity
 public class RatingTable {
 
