@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import asde.proj4.persistence.dao.PlayerDAO;
-import asde.proj4.persistence.model.Player;
+import asde.proj4.data.persistence.dao.PlayerDAO;
+import asde.proj4.data.persistence.model.Player;
 
 
 @RunWith(SpringRunner.class)
