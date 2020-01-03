@@ -1,9 +1,8 @@
-package asde.proj4.presentation.controllers;
+package asde.proj4.presentation.tictactoesingleplayer.controllers;
 
-import asde.proj4.logic.games.tictactoe.GridAdapter;
-import asde.proj4.logic.games.tictactoe.Symbol;
-import asde.proj4.logic.games.tictactoe.player.Move;
-import asde.proj4.presentation.services.TicTacToeSinglePlayerService;
+import asde.proj4.presentation.tictactoesingleplayer.services.TicTacToeSinglePlayerService;
+import asde.proj4.presentation.tictactoesingleplayer.util.GridAdapter;
+import asde.proj4.presentation.tictactoesingleplayer.util.MoveAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +16,7 @@ public class TicTacToeSinglePlayerController {
 	
 	@CrossOrigin
 	@PostMapping("/move")
-	public Move move(@RequestBody final Symbol symbol, @RequestBody final GridAdapter grid) {
-		return ticTacToeSinglePlayerService.move(symbol, grid.convert());
+	public MoveAdapter move(@RequestBody final GridAdapter gridAdapter) {
+		return ticTacToeSinglePlayerService.move(gridAdapter);
 	}
 }
