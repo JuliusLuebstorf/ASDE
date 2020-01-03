@@ -54,7 +54,7 @@ public final class AI {
 					grid.set(row, column, Symbol.EMPTY);
 					
 					if(moveValue > bestValue) {
-						move = new Move(row, column, symbol);
+						move = Move.getMove(row, column, symbol);
 						bestValue = moveValue;
 					}
 				}

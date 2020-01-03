@@ -1,6 +1,6 @@
 package asde.proj4.presentation.controllers;
 
-import asde.proj4.logic.games.tictactoe.Grid;
+import asde.proj4.logic.games.tictactoe.GridAdapter;
 import asde.proj4.logic.games.tictactoe.Symbol;
 import asde.proj4.logic.games.tictactoe.player.Move;
 import asde.proj4.presentation.services.TicTacToeSinglePlayerService;
@@ -17,7 +17,7 @@ public class TicTacToeSinglePlayerController {
 	
 	@CrossOrigin
 	@PostMapping("/move")
-	public Move move(@RequestBody final Symbol symbol, @RequestBody final Grid grid) {
-		return ticTacToeSinglePlayerService.move(symbol, grid);
+	public Move move(@RequestBody final Symbol symbol, @RequestBody final GridAdapter grid) {
+		return ticTacToeSinglePlayerService.move(symbol, grid.convert());
 	}
 }
