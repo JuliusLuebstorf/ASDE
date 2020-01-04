@@ -34,7 +34,7 @@ public class MoveDTO {
 	}
 	
 	public static MoveDTO getArrayMove(final GridDTO gridDTO) {
-		final Move move = AI.bestMove(gridDTO.getCharacter(), GridDTO.convertToGrid(gridDTO.getArray()));
+		final Move move = AI.bestMove(gridDTO.getCharacter(), GridDTO.convertToGrid(gridDTO.getGridArray()));
 		
 		return move != null ? new MoveDTO(move.COLUMN + (move.ROW * Grid.ROWS), move.CHARACTER) : null;
 	}

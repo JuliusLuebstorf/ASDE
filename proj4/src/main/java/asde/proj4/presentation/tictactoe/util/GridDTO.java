@@ -4,23 +4,15 @@ import asde.proj4.logic.games.tictactoe.Grid;
 
 public class GridDTO {
 	private char character;
-	private final int gameID;
-	private String[] array;
+	private String[] gridArray;
 	
 	public GridDTO() {
-		gameID = -1;
+
 	}
 	
 	public GridDTO(final char character, final String[] array) {
-		this();
-		
 		this.character = character;
-		this.array = array;
-	}
-	
-	public GridDTO(final int gameID, final String[] array) {
-		this.gameID = gameID;
-		this.array = array;
+		this.gridArray = array;
 	}
 	
 	public char getCharacter() {
@@ -31,16 +23,12 @@ public class GridDTO {
 		this.character = character;
 	}
 	
-	public int getGameID() {
-		return gameID;
+	public String[] getGridArray() {
+		return gridArray;
 	}
 
-	public String[] getArray() {
-		return array;
-	}
-
-	public void setArray(final String[] array) {
-		this.array = array;
+	public void setGridArray(final String[] array) {
+		this.gridArray = array;
 	}
 	
 	public static Grid convertToGrid(final String[] array) {
