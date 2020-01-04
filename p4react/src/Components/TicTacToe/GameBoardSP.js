@@ -42,18 +42,17 @@ class GameBoardSP extends React.Component {
             return;
           } 
 
-            targetField[index] = "X";
-            this.setState({fields: targetField});
-            this.moveAI(targetField);
+        targetField[index] = "X";
+        this.moveAI(targetField);
       }
 
-      moveAI = (array) => {
-          let changedArray = array; 
-        ServiceClient.post("/singleplayer/move", {character: "O", array: changedArray}
+    moveAI = (array) => {
+        let changedArray = array; 
+        ServiceClient.post("/singleplayer/move", {character: "X", array: changedArray}
         ).then((res)=> {
             console.log(res.data.array);
             console.log(res.data);
-            changedArray[res.data.position] = "O" //res.data.character
+            changedArray[res.data.position] = res.data.character
             console.log(this.state.fields);
             let count = this.state.clickCount + 2;
             this.setState({fields: changedArray, clickCount: count});
