@@ -1,16 +1,16 @@
-package asde.proj4.presentation.tictactoesingleplayer.util;
+package asde.proj4.presentation.tictactoe.util;
 
 import asde.proj4.logic.games.tictactoe.Grid;
 
-public class GridAdapter {
+public class GridDTO {
 	private char character;
 	private char[] array;
 	
-	public GridAdapter() {
+	public GridDTO() {
 		
 	}
 	
-	public GridAdapter(final char character, final char[] array) {
+	public GridDTO(final char character, final char[] array) {
 		this.character = character;
 		this.array = array;
 	}

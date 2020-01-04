@@ -1,7 +1,8 @@
 package asde.proj4;
 
-import asde.proj4.presentation.tictactoesingleplayer.util.GridAdapter;
-import asde.proj4.presentation.tictactoesingleplayer.util.MoveAdapter;
+import asde.proj4.presentation.tictactoe.util.MoveDTO;
+import asde.proj4.presentation.tictactoe.util.GridDTO;
+
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -15,14 +16,14 @@ public class AITest {
 		Arrays.fill(array, '-');
 		
 		do {
-			final MoveAdapter ma = MoveAdapter.getArrayMove(new GridAdapter(character, array));
+			final MoveDTO ma = MoveDTO.getArrayMove(new GridDTO(character, array));
 			array[ma.getPosition()] = ma.getCharacter();
 			
-			System.out.println(new GridAdapter(character, array).convertToGrid());
+			System.out.println(new GridDTO(character, array).convertToGrid());
 			
 			array[pos = scanner.nextInt()] = character;
 			
-			System.out.println(new GridAdapter(character, array).convertToGrid());
+			System.out.println(new GridDTO(character, array).convertToGrid());
 		} while(pos != -1);
 		
 		scanner.close();
