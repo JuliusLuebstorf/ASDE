@@ -1,6 +1,7 @@
-package asde.proj4.logic.games.tictactoe.player;
+package asde.proj4.logic.games.tictactoe.ai;
 
 import asde.proj4.logic.games.tictactoe.Grid;
+import asde.proj4.logic.games.tictactoe.Move;
 
 public final class AI {
 	private static int evaluationFunction(final char character, final Grid grid) {

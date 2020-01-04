@@ -1,4 +1,4 @@
-package asde.proj4.logic.games.tictactoe.player;
+package asde.proj4.logic.games.tictactoe;
 
 public class Move {
 	public final int ROW, COLUMN;

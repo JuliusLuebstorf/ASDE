@@ -1,8 +1,8 @@
 package asde.proj4.presentation.tictactoe.util;
 
 import asde.proj4.logic.games.tictactoe.Grid;
-import asde.proj4.logic.games.tictactoe.player.AI;
-import asde.proj4.logic.games.tictactoe.player.Move;
+import asde.proj4.logic.games.tictactoe.Move;
+import asde.proj4.logic.games.tictactoe.ai.AI;
 
 public class MoveDTO {
 	private int position;
@@ -33,9 +33,14 @@ public class MoveDTO {
 		this.character = character;
 	}
 	
-	public static MoveDTO getArrayMove(final GridDTO gridAdapter) {
-		final Move move = AI.bestMove(gridAdapter.getCharacter(), gridAdapter.convertToGrid());
+	public static MoveDTO getArrayMove(final GridDTO gridDTO) {
+		final Move move = AI.bestMove(gridDTO.getCharacter(), GridDTO.convertToGrid(gridDTO.getArray()));
 		
 		return move != null ? new MoveDTO(move.COLUMN + (move.ROW * Grid.ROWS), move.CHARACTER) : null;
+	}
+
+	@Override
+	public String toString() {
+		return "MoveDTO [position=" + position + ", character=" + character + "]";
 	}
 }
