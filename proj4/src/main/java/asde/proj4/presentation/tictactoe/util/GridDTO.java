@@ -4,13 +4,13 @@ import asde.proj4.logic.games.tictactoe.Grid;
 
 public class GridDTO {
 	private char character;
-	private char[] array;
+	private String[] array;
 	
 	public GridDTO() {
 		
 	}
 	
-	public GridDTO(final char character, final char[] array) {
+	public GridDTO(final char character, final String[] array) {
 		this.character = character;
 		this.array = array;
 	}
@@ -23,11 +23,11 @@ public class GridDTO {
 		this.character = character;
 	}
 
-	public char[] getArray() {
+	public String[] getArray() {
 		return array;
 	}
 
-	public void setArray(final char[] array) {
+	public void setArray(final String[] array) {
 		this.array = array;
 	}
 	
@@ -36,8 +36,12 @@ public class GridDTO {
 		int index = 0;
 		
 		for(int row = 0; row < Grid.ROWS; row++)
-			for(int column = 0; column < Grid.COLUMNS; column++)
-				grid.set(row, column, array[index++]);
+			for(int column = 0; column < Grid.COLUMNS; column++) {
+				if(array[index].length() > 1)
+					throw new IllegalArgumentException("Size of " + array[index] + " > 1");
+				
+				grid.set(row, column, array[index++].charAt(0));
+			}
 		
 		return grid;
 	}
