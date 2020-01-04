@@ -5,15 +5,16 @@ import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import ServiceClient from '../../Services/ServiceClient';
 
-class GameBoard extends React.Component {
+class GameBoardMP extends React.Component {
     
     constructor(props) {
         super(props);
         this.state = {
-            fields: Array(9).fill(null),
-            player: "1",
+            fields: Array(9).fill(""),
             symbol: "X",
+            player: 1,
             winner: null,
             clickCount: 0
         };
@@ -34,31 +35,28 @@ class GameBoard extends React.Component {
     }
 
     clickFunction(index) {
-        const targetField = this.state.fields.slice();
+        let targetField = this.state.fields.slice();
+        
         if (calculateWinner(targetField)) {
             let winner = calculateWinner(targetField);
             this.setState({winner: targetField})
-            //this.render();
             return;
           } 
 
-        if (this.state.player=="1") {
-            targetField[index] = "X"
-            this.setState({player: "2", symbol: "O"})
+        if (this.state.player===1) {
+            targetField[index] = "X";
+            this.setState({fields: targetField, player:2});
         } else {
-            targetField[index] = "O"
-            this.setState({player:"1", symbol: "X"})
+            targetField[index] = "O";
+            this.setState({fields:targetField, player:1})
         }
-        let count = this.state.clickCount + 1;
-        this.setState({fields: targetField, clickCount: count});
       }
 
 
+
+
     render() {
-        let text =  "Player " + this.state.player + " (" + this.state.symbol + ") is next."
-        if ((calculateWinner(this.state.fields)!= null) || (this.state.clickCount == 9)) {
-            text = "Game has ended!";
-        }
+
         return (
         <div>
             <Grid
@@ -70,9 +68,6 @@ class GameBoard extends React.Component {
             <Paper>
                 <Typography variant="h3" component="h3">
                     Tic-Tac-Toe
-                </Typography>
-                <Typography variant="subtitle1" component="p">
-                    {text}
                 </Typography>
             </Paper>
             </Grid>
@@ -136,7 +131,7 @@ class GameBoard extends React.Component {
                 justify="center"
                 alignItems="center"
                 >
-                    <h3>{(calculateWinner(this.state.fields) === "X") ? "Player 1 wins!" : (calculateWinner(this.state.fields) === "O" ? "Player 2 wins!": this.state.clickCount === 9 ? "Game ends in a draw!": "")} </h3>
+                    <h3>{(calculateWinner(this.state.fields) === "X") ? "Player 1 wins!" : (calculateWinner(this.state.fields) === "O" ? "Player 2 wins!": this.state.clickCount >= 9 ? "Game ends in a draw!": "")} </h3>
             </Grid>
 
             <Grid
@@ -160,6 +155,7 @@ class GameBoard extends React.Component {
 
 }
 
+
 function calculateWinner(squares) {
     const lines = [
       [0, 1, 2],
@@ -179,5 +175,6 @@ function calculateWinner(squares) {
     }
     return null;
   }
+  
 
-export default GameBoard;
+export default GameBoardMP;

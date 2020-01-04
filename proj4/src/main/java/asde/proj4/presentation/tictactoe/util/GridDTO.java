@@ -40,7 +40,9 @@ public class GridDTO {
 				if(array[index].length() > 1)
 					throw new IllegalArgumentException("Size of " + array[index] + " > 1");
 				
-				grid.set(row, column, array[index++].charAt(0));
+				grid.set(row, column, array[index].isEmpty() ? Grid.EMPTY : array[index].charAt(0));
+
+                index++;
 			}
 		
 		return grid;

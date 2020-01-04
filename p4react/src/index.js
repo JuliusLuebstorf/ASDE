@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import GameBoard from './Components/TicTacToe/GameBoard';
+import GameBoard from './Components/TicTacToe/GameBoardSP';
 import Lobby from './Components/Lobby/Lobby';
 
 ReactDOM.render(<Lobby />, document.getElementById('root'));

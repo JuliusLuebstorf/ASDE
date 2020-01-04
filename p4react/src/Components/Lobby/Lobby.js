@@ -26,7 +26,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import GameBoard from '../TicTacToe/GameBoard';
+import GameBoardSP from '../TicTacToe/GameBoardSP';
 import PanToolIcon from '@material-ui/icons/PanTool';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import LooksOneIcon from '@material-ui/icons/LooksOne';
@@ -35,6 +35,9 @@ import Looks3Icon from '@material-ui/icons/Looks3';
 import HomeIcon from '@material-ui/icons/Home';
 import Leaderboard from './Leaderboard';
 import HomeScreen from './HomeScreen';
+import GameFields from '../TicTacToe/GameFields';
+import TTTGameSelection from '../TicTacToe/TTTGameSelection';
+
 
 function Copyright() {
     return (
@@ -221,7 +224,7 @@ export default function Dashoboard() {
               <Grid item xs={12}>
                 <Paper className={classes.paper}>
                   {/* Here the if / else have to be called to change the games */}
-                {component === 'ttt' ? <GameBoard/> : 
+                {component === 'ttt' ? <TTTGameSelection/> : 
                 component === 'changeThisForFutureGame' ? "futureGame" : 
                 <HomeScreen/>
                 }
