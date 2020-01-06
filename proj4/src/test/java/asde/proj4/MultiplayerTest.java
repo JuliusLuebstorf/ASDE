@@ -5,7 +5,7 @@ import asde.proj4.logic.games.tictactoe.Grid;
 import java.util.Scanner;
 
 public class MultiplayerTest {
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		final Grid grid = new Grid();
 		final Game game = new Game();
 		final Scanner scanner = new Scanner(System.in);
@@ -26,5 +26,5 @@ public class MultiplayerTest {
 		}
 		
 		scanner.close();
-	}
+	}*/
 }
