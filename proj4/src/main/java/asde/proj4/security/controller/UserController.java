@@ -155,6 +155,31 @@ public class UserController {
         return username;
     }
 
+	
+	
+	
+	@CrossOrigin
+	@GetMapping("/homepage")
+	public void homepage(HttpServletResponse httpResponse)throws Exception {
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		String username = "";
+		if (principal instanceof UserDetails) {
+
+			username = ((UserDetails)principal).getUsername();
+
+		} else {
+
+		   username = principal.toString();
+
+		}
+		
+				httpResponse.sendRedirect("http://127.0.0.1:3000/homepage?user="+username);
+			
+	    
+	}
+	
+	
 	private String getJWTToken(String username) {
 		String secretKey = "mySecretKey";
 		List grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER");
