@@ -51,6 +51,8 @@ public class TicTacToeMultiplayerService {
 				list.add(GameDTO.convertToGameDTO(game));
 		});
 		
+		list.add(new GameDTO(1, "a", new String[]{}, "cacca"));
+		
 		return list;
 	}
 	

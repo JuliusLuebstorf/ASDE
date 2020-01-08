@@ -61,6 +61,15 @@ public class Game implements Runnable {
 		return players[turn];
 	}
 	
+	public String getStatusString() {
+		switch(status) {
+			case WAITING: return "Waiting";
+			case RUNNING: return "Running";
+			case OVER: return "Over";
+			default: System.err.println("Fatal error"); System.exit(-1); return "";
+		}
+	}
+	
 	@Override
 	public void run() {
 		int counter = 30;

@@ -7,20 +7,22 @@ public class GameDTO {
 	private String currentPlayer;
 	private String[] gridArray;
 	private String[] players;
+	private String status;
 	
 	public GameDTO() {
 		
 	}
 	
-	public GameDTO(final int gameID, final String currentPlayer, final String[] grid) {
-		this(gameID, currentPlayer, grid, null);
+	public GameDTO(final int gameID, final String currentPlayer, final String[] grid, final String status) {
+		this(gameID, currentPlayer, grid, null, status);
 	}
 	
-	public GameDTO(final int gameID, final String currentPlayer, final String[] grid, final String[] players) {
+	public GameDTO(final int gameID, final String currentPlayer, final String[] grid, final String[] players, final String status) {
 		this.gameID = gameID;
 		this.currentPlayer = currentPlayer;
 		this.gridArray = grid;
 		this.players = players;
+		this.status = status;
 	}
 
 	public int getGameID() {
@@ -55,7 +57,15 @@ public class GameDTO {
 		this.players = players;
 	}
 	
+	public String getStatus() {
+		return status;
+	}
+	
+	public void setStatus(final String status) {
+		this.status = status;
+	}
+	
 	public static GameDTO convertToGameDTO(final Game game) {
-		return new GameDTO(game.ID, game.getCurrentPlayer(), GridDTO.getArrayFromGrid(game.getGrid()), game.getPlayers());
+		return new GameDTO(game.ID, game.getCurrentPlayer(), GridDTO.getArrayFromGrid(game.getGrid()), game.getPlayers(), game.getStatusString());
 	}
 }
