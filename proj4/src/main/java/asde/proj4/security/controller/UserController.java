@@ -136,13 +136,13 @@ public class UserController {
 	}
 	
 	@CrossOrigin
-	@PostMapping("/currentUserName")
+	@GetMapping("/currentUserName")
     @ResponseBody
     public String currentUserName() {
-		//Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		String username = "a";
-	/*	if (principal instanceof UserDetails) {
+		String username = "";
+		if (principal instanceof UserDetails) {
 
 			username = ((UserDetails)principal).getUsername();
 
@@ -150,7 +150,7 @@ public class UserController {
 
 		   username = principal.toString();
 
-		}*/
+		}
 		
         return username;
     }
