@@ -6,7 +6,9 @@ import asde.proj4.security.domain.UserPlayer;
 
 public interface UserPlayerDAO extends JpaRepository<UserPlayer, Integer>{
 	
-	UserPlayer findByUsername(String nombre);
+	UserPlayer findByUsername(String username);
 	
 	UserPlayer findByEmail(String email);
+	
+	UserPlayer findByUsernameOrEmail(String username, String email);
 }

@@ -1,16 +1,21 @@
 package asde.proj4.security.controller;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,53 +52,41 @@ public class UserController {
 	@CrossOrigin
 	@GetMapping("/addUser")
 	@ResponseBody
-	public boolean add(@RequestParam String username, @RequestParam String pass, @RequestParam String email) {
+	public void add(@RequestParam String username, @RequestParam String pass, @RequestParam String email, HttpServletResponse httpResponse)throws Exception {
 
 		try {
+			UserPlayer user = userDAO.findByUsernameOrEmail(username, email);
+
+			if(user != null) {
+				httpResponse.sendRedirect("http://127.0.0.1:3000/addUser?msg=addUser_problem");
+				return;
+			}
+			
 			UserPlayer us = new UserPlayer(username, bcrypt.encode(pass), email);
 
 			userDAO.save(us);	
 			
-			return true;
+			httpResponse.sendRedirect("http://127.0.0.1:3000/login");
 			
 		} catch (Exception e) {
-			 
+			httpResponse.sendRedirect("http://127.0.0.1:3000/addUser?msg=addUser_problem");
 		}
 		
 
-		return false;
-	}
-
-	@CrossOrigin
-	@GetMapping("/login2")
-	@ResponseBody
-	public boolean/* UserToken */ login(@RequestParam("username") String username, @RequestParam("pass") String pass) {
-
-		try {
-			UserDetails ud = userDetailsService.loadUserByUsername(username);
-			return (ud.getPassword().equals(bcrypt.encode(pass)));
-		} catch (Exception e) {
-
-		}
-
-		return false;
-
-		/*
-		 * String token = getJWTToken(username); UserToken user = new UserToken();
-		 * user.setUsername(username); user.setToken(token); return user;
-		 */
-
+		
 	}
 
 	
 	@CrossOrigin
 	@GetMapping("/recoveryPass")
-	@ResponseBody
-	public boolean recoveryPass(@RequestParam String email) {
+	public void recoveryPass(@RequestParam String email, HttpServletResponse httpResponse)throws Exception {
 		try {
 			UserPlayer user = userDAO.findByEmail(email);
 
-			if(user == null) return false;
+			if(user == null) {
+				httpResponse.sendRedirect("http://127.0.0.1:3000/recoveryPass?msg=email_incorrect");
+				return;
+			}
 			
 			String tempPass = System.currentTimeMillis()+"";
 			tempPass = tempPass.substring(tempPass.length()-5);
@@ -105,14 +98,16 @@ public class UserController {
 			String content = "Please visit our site http://127.0.0.1:3000/updatePass for recovery your password, use this temporal password: "+tempPass;
 			sendEmail.sendEmail(email, subject, content);
 			
-		    return true;
+			httpResponse.sendRedirect("http://127.0.0.1:3000/updatePass");
 			
 		} catch (Exception e) {
            
 			e.printStackTrace();
+			
+			httpResponse.sendRedirect("http://127.0.0.1:3000/recoveryPass?msg=problem");
 		}
 
-		return false;
+	    
 	}
 	
 	
@@ -139,6 +134,26 @@ public class UserController {
 
 		return false;
 	}
+	
+	@CrossOrigin
+	@PostMapping("/currentUserName")
+    @ResponseBody
+    public String currentUserName() {
+		//Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		String username = "a";
+	/*	if (principal instanceof UserDetails) {
+
+			username = ((UserDetails)principal).getUsername();
+
+		} else {
+
+		   username = principal.toString();
+
+		}*/
+		
+        return username;
+    }
 
 	private String getJWTToken(String username) {
 		String secretKey = "mySecretKey";
