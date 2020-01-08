@@ -1,11 +1,11 @@
 import React from 'react';
-import GameFields from './GameFields';
+import GameFields from '../GameFields';
 import Grid from '@material-ui/core/Grid';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import ServiceClient from '../../Services/ServiceClient';
+import ServiceClient from '../../../Services/ServiceClient';
 
 class GameBoardMP extends React.Component {
     
@@ -16,11 +16,25 @@ class GameBoardMP extends React.Component {
             symbol: "X",
             player: 1,
             winner: null,
-            clickCount: 0
+            clickCount: 0,
+            time: 30
         };
         this.basicState = this.state;
-
         this.getGameFields = this.getGameFields.bind(this);
+        this.startTimer = this.startTimer.bind(this)
+    }
+
+    componentDidMount() {
+        this.startTimer();
+    }
+
+    startTimer() {
+        this.setState({
+            time: 30
+        })
+        this.timer = setInterval(() => this.setState({
+            time: this.state.time > 0 ? this.state.time - 1 : 0
+        }), 1000);
     }
 
     resetGame = () => {
@@ -35,6 +49,9 @@ class GameBoardMP extends React.Component {
     }
 
     clickFunction(index) {
+        if(this.state.time <= 0)
+            return;
+
         let targetField = this.state.fields.slice();
         
         if (calculateWinner(targetField)) {
@@ -71,6 +88,16 @@ class GameBoardMP extends React.Component {
                 </Typography>
             </Paper>
             </Grid>
+            
+            <Grid
+                container
+                direction="row"
+                justify="center"
+                alignItems="center"
+                >
+                <div><h2>{this.state.time}</h2></div>
+            </Grid>
+            
             <Grid
                 container
                 direction="row"

@@ -8,7 +8,7 @@ import Container from '@material-ui/core/Container';
 import GameBoardSP from './GameBoardSP';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
-import GameBoardMP from './GameBoardMP';
+import MatchList from './Multiplayer/MatchList';
 
 class TTTGameSelection extends React.Component {
 
@@ -38,7 +38,7 @@ class TTTGameSelection extends React.Component {
                 <IconButton onClick={()=> this.setState({game:0})}>
                     <ArrowBackIcon/>
                 </IconButton>
-                <GameBoardMP/>
+                <MatchList/>
             </div>
         );
         

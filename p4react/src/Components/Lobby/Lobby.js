@@ -37,6 +37,8 @@ import Leaderboard from './Leaderboard';
 import HomeScreen from './HomeScreen';
 import GameFields from '../TicTacToe/GameFields';
 import TTTGameSelection from '../TicTacToe/TTTGameSelection';
+import ServiceClient from '../../Services/ServiceClient';
+
 
 
 function Copyright() {
@@ -51,7 +53,7 @@ function Copyright() {
       </Typography>
     );
   }
-  
+   
   const drawerWidth = 240;
   
   const useStyles = makeStyles(theme => ({
@@ -138,17 +140,42 @@ function Copyright() {
     },
   }));
 
-export default function Dashoboard() {
+ 
+
+export default function Lobby() {
     const classes = useStyles();
     const [open, setOpen] = React.useState(true);
     const [component, setComponent] = React.useState('lobby');
+    const [currentUser, setCurrentUser] = React.useState('currentUser');
+
     const handleDrawerOpen = () => {
       setOpen(true);
+
     };
     const handleDrawerClose = () => {
       setOpen(false);
     };
 
+    function logout(){
+      //onClick={logout}
+      /*ServiceClient.get("/logout").then((res) => {
+      })*/
+
+      
+
+    }
+
+    useEffect(() => {
+      setCurrentUser("Hello ");
+
+      ServiceClient.post("currentUserName").then((res) => {
+        setCurrentUser(res.data);
+        
+      })
+
+
+    }, []);
+    
 
     return (
       <div className={classes.root}>
@@ -165,9 +192,9 @@ export default function Dashoboard() {
               <MenuIcon />
             </IconButton>}
             <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-              Game Lobby
+            {currentUser} Welcome to Game Lobby
             </Typography>
-            <Fab variant="extended" color="primary">
+            <Fab variant="extended" color="primary"  href="http://localhost:8080/logout" >
               <ExitToAppIcon />
                 Logout
             </Fab>
