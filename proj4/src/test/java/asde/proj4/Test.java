@@ -81,7 +81,7 @@ class Test {
 					
 					//just i use to print the machine movement
 					solucion[moveDTO.getPosition()] = moveDTO.getCharacter();
-					System.out.println(solucion);
+					System.out.println(String.valueOf(solucion) + "   chosen position: " + moveDTO.getPosition() + "   character played: " +  moveDTO.getCharacter());
 					
 					//restore the position
 					solucion[moveDTO.getPosition()] = '-';
@@ -109,7 +109,8 @@ class Test {
 		char character = 'O'; 
 		final String[] array = {"O","-","O","-","X","-","X","O","X"};
 		*/
-				
+			
+		System.out.println("comenzo el test");
 		devolverSoluciones_R(numero, 0, new char[numero], 0);
 		System.out.println(sum + "");
 		assertTrue(true);
