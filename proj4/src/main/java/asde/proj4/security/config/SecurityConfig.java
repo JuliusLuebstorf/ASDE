@@ -58,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
           .and()
           .formLogin().loginPage("http://localhost:3000/index")
           .loginProcessingUrl("/perform_login")
-          .defaultSuccessUrl("http://localhost:3000/homepage",true)
+          .defaultSuccessUrl("/homepage")
           .failureUrl("http://localhost:3000/index?msg=login_incorrect")
           .and()
           .logout().permitAll().and()
