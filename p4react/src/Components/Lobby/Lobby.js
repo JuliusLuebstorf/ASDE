@@ -39,6 +39,9 @@ import GameFields from '../TicTacToe/GameFields';
 import TTTGameSelection from '../TicTacToe/TTTGameSelection';
 import ServiceClient from '../../Services/ServiceClient';
 
+import {
+  useLocation
+} from "react-router-dom";
 
 
 function Copyright() {
@@ -148,6 +151,8 @@ export default function Lobby() {
     const [component, setComponent] = React.useState('lobby');
     const [currentUser, setCurrentUser] = React.useState('currentUser');
 
+    
+
     const handleDrawerOpen = () => {
       setOpen(true);
 
@@ -165,13 +170,18 @@ export default function Lobby() {
 
     }
 
-    useEffect(() => {
-      setCurrentUser("Hello ");
+    var query = null;
+      try {
+      const location = useLocation();
+      query = location!=null? new URLSearchParams(location.search):null; 
+      
+      } catch (error) {
+          
+      }
 
-      ServiceClient.post("currentUserName").then((res) => {
-        setCurrentUser(res.data);
-        
-      })
+    useEffect(() => {
+     
+     setCurrentUser((query!=null ) ?query.get('user'):"");
 
 
     }, []);
@@ -251,7 +261,7 @@ export default function Lobby() {
               <Grid item xs={12}>
                 <Paper className={classes.paper}>
                   {/* Here the if / else have to be called to change the games */}
-                {component === 'ttt' ? <TTTGameSelection/> : 
+                {component === 'ttt' ? <TTTGameSelection user={currentUser}/> : 
                 component === 'changeThisForFutureGame' ? "futureGame" : 
                 <HomeScreen/>
                 }

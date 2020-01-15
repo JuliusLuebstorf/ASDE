@@ -1,207 +1,130 @@
 import React from 'react';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 import GameFields from '../GameFields';
 import Grid from '@material-ui/core/Grid';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import MatchList from './MatchList';
 import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
 import ServiceClient from '../../../Services/ServiceClient';
+import Typography from '@material-ui/core/Typography';
 
 class GameBoardMP extends React.Component {
-    
+    static emptyChar = "-";
+
     constructor(props) {
         super(props);
-        this.state = {
-            fields: Array(9).fill(""),
-            symbol: "X",
-            player: 1,
-            winner: null,
-            clickCount: 0,
-            time: 30
-        };
-        this.basicState = this.state;
-        this.getGameFields = this.getGameFields.bind(this);
-        this.startTimer = this.startTimer.bind(this)
+        
+        this.state = {fields: Array(9).fill(GameBoardMP.emptyChar), symbol: null, currentPlayer: null, winner: null, game: true};
+        this.clickFunction = this.clickFunction.bind(this);
+        this.startTimer = this.startTimer.bind(this);
+        this.update = this.update.bind(this);
     }
 
     componentDidMount() {
-        this.startTimer();
-    }
-
-    startTimer() {
-        this.setState({
-            time: 30
-        })
-        this.timer = setInterval(() => this.setState({
-            time: this.state.time > 0 ? this.state.time - 1 : 0
-        }), 1000);
-    }
-
-    resetGame = () => {
-        this.setState(this.basicState);
-        alert("Game has been reset!");
-    }
-
-
-    getGameFields(displayValue) {
-        return <GameFields value={this.state.fields[displayValue]}
-        onClick={() => this.clickFunction(displayValue)}/>
+        if(this.props.observer)
+            this.startTimer();
+        else
+            ServiceClient.post("/multiplayer/get", {gameID: this.props.gameID, currentPlayer: this.props.user, gridArray: this.state.fields}).then((res) => {
+                this.setState({symbol: res.data.symbol, currentPlayer: res.data.player, fields: res.data.gridArray, winner: calculateWinner(res.data.gridArray)});
+                
+                if(this.state.winner === null)
+                    this.startTimer();
+                else
+                    ServiceClient.get("/multiplayer/endGame?gameID=" + this.props.gameID + "&user=" + this.props.user);
+            });
     }
 
     clickFunction(index) {
-        if(this.state.time <= 0)
+        if(this.props.observer || this.state.currentPlayer != this.props.user || this.state.fields[index] != GameBoardMP.emptyChar || this.state.winner != null)
             return;
+    
+        let array = this.state.fields;
+        array[index] = this.state.symbol;
 
-        let targetField = this.state.fields.slice();
-        
-        if (calculateWinner(targetField)) {
-            let winner = calculateWinner(targetField);
-            this.setState({winner: targetField})
-            return;
-          } 
+        this.setState({fields: array, winner: calculateWinner(array)});
 
-        if (this.state.player===1) {
-            targetField[index] = "X";
-            this.setState({fields: targetField, player:2});
-        } else {
-            targetField[index] = "O";
-            this.setState({fields:targetField, player:1})
-        }
-      }
-
-
-
+        if(this.state.winner === null) {
+            ServiceClient.post("/multiplayer/move", {gameID: this.props.gameID, currentPlayer: this.props.user, gridArray: array}).then((res)=> {
+                this.setState({currentPlayer: res.data}); 
+                this.startTimer();
+            });
+        } else
+            ServiceClient.get("/multiplayer/endGame?gameID=" + this.props.gameID + "&user=" + this.props.user);
+    }
 
     render() {
-
-        return (
-        <div>
-            <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                >
-            <Paper>
-                <Typography variant="h3" component="h3">
-                    Tic-Tac-Toe
-                </Typography>
-            </Paper>
-            </Grid>
-            
-            <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                >
-                <div><h2>{this.state.time}</h2></div>
-            </Grid>
-            
-            <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                >
-                <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
-                    <Grid container item xs={200} spacing={200}>
-                        {this.getGameFields(0)}
+        if(this.state.game)
+            return (
+                <div>
+                    <IconButton onClick={()=> this.setState({game:false})}><ArrowBackIcon/></IconButton>
+                    <Grid container direction="row" justify="center" alignItems="center">
+                        <Paper><Typography variant="h3" component="h3">Tic-Tac-Toe</Typography></Paper>
                     </Grid>
-                    <Grid container item xs={12} spacing={200}>
-                        {this.getGameFields(1)}
+                    <Grid container direction="row" justify="center" alignItems="center">
+                        <div><h2>{this.state.currentPlayer}</h2></div>
                     </Grid>
-                    <Grid container item xs={12} spacing={200}>
-                        {this.getGameFields(2)}
+                    <Grid container direction="row" justify="center" alignItems="center">
+                        <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
+                            <Grid container item xs={200} spacing={200}><GameFields value={this.state.fields[0]} onClick={() => this.clickFunction(0)}/></Grid>
+                            <Grid container item xs={12} spacing={200}><GameFields value={this.state.fields[1]} onClick={() => this.clickFunction(1)}/></Grid>
+                            <Grid container item xs={12} spacing={200}><GameFields value={this.state.fields[2]} onClick={() => this.clickFunction(2)}/></Grid>
+                        </ButtonGroup>
                     </Grid>
-                </ButtonGroup>
-            </Grid>
-            <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                >
-                <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
-                    <Grid container item xs={12} spacing={200}>
-                        {this.getGameFields(3)}
+                    <Grid container direction="row" justify="center" alignItems="center">
+                        <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
+                            <Grid container item xs={12} spacing={200}><GameFields value={this.state.fields[3]} onClick={() => this.clickFunction(3)}/></Grid>
+                            <Grid container item xs={12} spacing={200}><GameFields value={this.state.fields[4]} onClick={() => this.clickFunction(4)}/></Grid>
+                            <Grid container item xs={12} spacing={200}><GameFields value={this.state.fields[5]} onClick={() => this.clickFunction(5)}/></Grid>
+                        </ButtonGroup>
                     </Grid>
-                    <Grid container item xs={12} spacing={200}>
-                        {this.getGameFields(4)}
+                    <Grid container direction="row" justify="center" alignItems="center">
+                        <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
+                            <Grid container item xs={12} spacing={200}><GameFields value={this.state.fields[6]} onClick={() => this.clickFunction(6)}/></Grid>
+                            <Grid container item xs={12} spacing={200}><GameFields value={this.state.fields[7]} onClick={() => this.clickFunction(7)}/></Grid>
+                            <Grid container item xs={12} spacing={200}><GameFields value={this.state.fields[8]} onClick={() => this.clickFunction(8)}/></Grid>
+                        </ButtonGroup>
                     </Grid>
-                    <Grid container item xs={12} spacing={200}>
-                        {this.getGameFields(5)}
+                    <Grid container direction="row" justify="center" alignItems="center">
+                        <h3>{this.state.winner === null ? "" : (this.state.winner === "" ? "Draw..." : this.state.winner + " wins!")}</h3>
                     </Grid>
-                </ButtonGroup>
-            </Grid>
-            <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                >
-                <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
-                    <Grid container item xs={12} spacing={200}>
-                        {this.getGameFields(6)}
-                    </Grid>
-                    <Grid container item xs={12} spacing={200}>
-                        {this.getGameFields(7)}
-                    </Grid>
-                    <Grid container item xs={12} spacing={200}>
-                        {this.getGameFields(8)}
-                    </Grid>
-                </ButtonGroup>
-            </Grid>
-            <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                >
-                    <h3>{(calculateWinner(this.state.fields) === "X") ? "Player 1 wins!" : (calculateWinner(this.state.fields) === "O" ? "Player 2 wins!": this.state.clickCount >= 9 ? "Game ends in a draw!": "")} </h3>
-            </Grid>
-
-            <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                >
-                    
-                <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
-                <div onClick={this.resetGame}>
-                    <Button variant="contained" color="default">
-                        Reset Game
-                    </Button>
                 </div>
-                </ButtonGroup>
-            </Grid>
-        </div>
-        );
+            );
+        else
+            return(<MatchList user={this.props.user}/>);
     }
 
+    startTimer() {
+        if(this.props.observer || (this.state.currentPlayer !== null && this.state.currentPlayer !== this.props.user))
+            this.timer = setInterval(this.update, 1500);
+    }
+
+    update() {
+        if(this.state.winner !== null) {
+            clearInterval(this.timer);
+            
+            if(!this.props.observer)
+                ServiceClient.get("/multiplayer/endGame?gameID=" + this.props.gameID + "&user=" + this.props.user);
+        } else
+            ServiceClient.get("multiplayer/update?gameID=" + this.props.gameID).then((res) => {
+                this.setState({currentPlayer: res.data.currentPlayer, fields: res.data.gridArray, winner: calculateWinner(res.data.gridArray)});
+
+                if(this.state.currentPlayer === this.props.user)
+                    clearInterval(this.timer);
+            });
+    }
 }
 
+function calculateWinner(array) {
+    for(let start = 0; start < array.length; start++)
+        if(array[start] !== GameBoardMP.emptyChar && ((start % 3 === 0 && array[start + 1] === array[start] && array[start + 2] === array[start]) || (start < 3 && array[start + 3] === array[start] && array[start + 6] === array[start]) || (start === 0 && array[4] === array[start] && array[8] === array[start]) || (start === 2 && array[4] === array[start] && array[6] === array[start])))
+            return array[start];
 
-function calculateWinner(squares) {
-    const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-    for (let i = 0; i < lines.length; i++) {
-      const [a, b, c] = lines[i];
-      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return squares[a];
-      }
-    }
-    return null;
-  }
-  
+    for(let index = 0; index < array.length; index++)
+        if(array[index] === GameBoardMP.emptyChar)
+            return null;
+
+    return "";
+}
 
 export default GameBoardMP;

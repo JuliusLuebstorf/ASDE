@@ -11,7 +11,6 @@ import IconButton from '@material-ui/core/IconButton';
 import MatchList from './Multiplayer/MatchList';
 
 class TTTGameSelection extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -20,8 +19,6 @@ class TTTGameSelection extends React.Component {
     }
 
   render() { 
-
-    
      if (this.state.game === 1) {
         return (
             <div>
@@ -35,17 +32,12 @@ class TTTGameSelection extends React.Component {
       else if (this.state.game === 2) {
         return (
             <div>
-                <IconButton onClick={()=> this.setState({game:0})}>
-                    <ArrowBackIcon/>
-                </IconButton>
-                <MatchList/>
+                <MatchList user={this.props.user}/>
             </div>
-        );
-        
+        );  
     }
 
     else {
-    
     return (
     
         <div>
