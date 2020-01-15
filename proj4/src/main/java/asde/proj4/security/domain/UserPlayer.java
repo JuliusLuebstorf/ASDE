@@ -12,11 +12,13 @@ public class UserPlayer{
 	private String username;
 	private String pass;
 	private String email;
+	private Integer ticTacToeScore;
 	public UserPlayer(String username, String pass, String email) {
 		super();
 		this.username = username;
 		this.pass = pass;
 		this.email = email;
+		this.ticTacToeScore = 0;
 	}
 	public UserPlayer() {
 		super();
@@ -40,6 +42,12 @@ public class UserPlayer{
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	public Integer getTicTacToeScore() {
+		return this.ticTacToeScore;
+	}
+	public void setTicTacToeScore(Integer score) {
+		this.ticTacToeScore += score;
 	}
 
 	
