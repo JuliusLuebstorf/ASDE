@@ -1,33 +1,37 @@
 package asde.proj4.security.controller;
 
-import java.security.Principal;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import asde.proj4.security.config.JwtUtil;
 import asde.proj4.security.dao.UserPlayerDAO;
 import asde.proj4.security.domain.UserPlayer;
 import asde.proj4.security.service.SendEmail;
 import asde.proj4.security.service.UserService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 
 @RestController
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 public class UserController {
 
 	@Autowired
@@ -38,159 +42,173 @@ public class UserController {
 
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
-	
+
 	@Autowired
 	private SendEmail sendEmail;
 
-	@GetMapping("/users")
-	@ResponseBody
-	public List<UserPlayer> users() {
+	@Autowired // @Resource(name="authenticationManager")
+	private AuthenticationManager authenticationManager;
 
-		return userDAO.findAll();
+	@CrossOrigin
+	@GetMapping("/users")
+	public List<UserPlayer> users() {
+		List<UserPlayer> users = userDAO.findAll();
+		return users;
 	}
 
 	@CrossOrigin
-	@GetMapping("/addUser")
-	@ResponseBody
-	public void add(@RequestParam String username, @RequestParam String pass, @RequestParam String email, HttpServletResponse httpResponse)throws Exception {
+	@PostMapping("/perform_login")
+	public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password, HttpServletRequest request) throws Exception {
+
+		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(username, password);
+		Authentication auth = authenticationManager.authenticate(authReq);
+		SecurityContext sc = SecurityContextHolder.getContext();
+		sc.setAuthentication(auth);
+		HttpSession session = request.getSession(true);
+		session.setAttribute("SPRING_SECURITY_CONTEXT", sc);
+		
+		if(sc.getAuthentication().isAuthenticated()) {
+			
+			String token = JwtUtil.makeToken(username);
+			//return token;
+			return new ResponseEntity<String>(token, HttpStatus.OK); //200
+		}
+
+		return new ResponseEntity<Error>(HttpStatus.UNAUTHORIZED); //401
+	}
+
+	@CrossOrigin
+	@PostMapping("/addUser")
+	public ResponseEntity<?> add(@RequestParam String username, @RequestParam String pass, @RequestParam String email,
+			HttpServletResponse httpResponse) throws Exception {
 
 		try {
 			UserPlayer user = userDAO.findByUsernameOrEmail(username, email);
 
-			if(user != null) {
-				httpResponse.sendRedirect("http://127.0.0.1:3000/addUser?msg=addUser_problem");
-				return;
+			if (user != null) {
+				// httpResponse.sendRedirect("http://127.0.0.1:3000/addUser?msg=addUser_problem");
+				return new ResponseEntity<Error>(HttpStatus.CONFLICT); //409 error el usuario o el email ya existen
 			}
-			
+
 			UserPlayer us = new UserPlayer(username, bcrypt.encode(pass), email);
 
-			userDAO.save(us);	
-			
-			httpResponse.sendRedirect("http://127.0.0.1:3000/login");
-			
-		} catch (Exception e) {
-			httpResponse.sendRedirect("http://127.0.0.1:3000/addUser?msg=addUser_problem");
-		}
-		
+			if (userDAO.save(us) != null)
+				return new ResponseEntity<>(HttpStatus.OK); //200
 
+			// httpResponse.sendRedirect("http://127.0.0.1:3000/login");
+
+		} catch (Exception e) {
+			// httpResponse.sendRedirect("http://127.0.0.1:3000/addUser?msg=addUser_problem");
+		}
+
+		return new ResponseEntity<Error>(HttpStatus.INTERNAL_SERVER_ERROR); //500
+		
 		
 	}
 
-	
 	@CrossOrigin
-	@GetMapping("/recoveryPass")
-	public void recoveryPass(@RequestParam String email, HttpServletResponse httpResponse)throws Exception {
+	@PostMapping("/recoveryPass")
+	public ResponseEntity<?> recoveryPass(@RequestParam String email, HttpServletResponse httpResponse) throws Exception {
 		try {
 			UserPlayer user = userDAO.findByEmail(email);
 
-			if(user == null) {
-				httpResponse.sendRedirect("http://127.0.0.1:3000/recoveryPass?msg=email_incorrect");
-				return;
+			if (user == null) {
+				//httpResponse.sendRedirect("http://127.0.0.1:3000/recoveryPass?msg=email_incorrect");
+				return new ResponseEntity<Error>(HttpStatus.NOT_FOUND); //404 user dont exist
 			}
-			
-			String tempPass = System.currentTimeMillis()+"";
-			tempPass = tempPass.substring(tempPass.length()-5);
-			
+
+			String tempPass = System.currentTimeMillis() + "";
+			tempPass = tempPass.substring(tempPass.length() - 5);
+
 			user.setPass(bcrypt.encode(tempPass));
 			userDAO.save(user);
-			
+
 			String subject = "Password recovery process";
-			String content = "Please visit our site http://127.0.0.1:3000/updatePass for recovery your password, use this temporal password: "+tempPass;
+			String content = "Please visit our site http://127.0.0.1:3000/updatePass for recovery your password, use this temporal password: "
+					+ tempPass;
 			sendEmail.sendEmail(email, subject, content);
-			
-			httpResponse.sendRedirect("http://127.0.0.1:3000/updatePass");
+
+			//httpResponse.sendRedirect("http://127.0.0.1:3000/updatePass");
+			return new ResponseEntity<>(HttpStatus.OK); //200
 			
 		} catch (Exception e) {
-           
+
 			e.printStackTrace();
-			
-			httpResponse.sendRedirect("http://127.0.0.1:3000/recoveryPass?msg=problem");
+
+			//httpResponse.sendRedirect("http://127.0.0.1:3000/recoveryPass?msg=problem");
+			return new ResponseEntity<Error>(HttpStatus.INTERNAL_SERVER_ERROR); //500
 		}
 
-	    
 	}
-	
-	
+
 	@CrossOrigin
 	@GetMapping("/updatePass")
-	@ResponseBody
-	public boolean changePass(@RequestParam String username, @RequestParam String oldPass,
+	public ResponseEntity<?> changePass(@RequestParam String username, @RequestParam String oldPass,
 			@RequestParam String newPass) {
 		try {
 			UserPlayer user = userDAO.findByUsername(username);
 
-			if (user.getPass().equals(bcrypt.encode(oldPass))) {
+			
+			if (bcrypt.matches(oldPass, user.getPass())) {
 
 				user.setPass(bcrypt.encode(newPass));
 
 				userDAO.save(user);
 
-				return true;
+				return new ResponseEntity<>(HttpStatus.OK); //200
 			}
 		} catch (Exception e) {
-           
+
 			e.printStackTrace();
 		}
 
-		return false;
+		return new ResponseEntity<Error>(HttpStatus.INTERNAL_SERVER_ERROR); //500
 	}
-	
+
 	@CrossOrigin
 	@GetMapping("/currentUserName")
-    @ResponseBody
-    public String currentUserName() {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-		String username = "";
-		if (principal instanceof UserDetails) {
-
-			username = ((UserDetails)principal).getUsername();
-
-		} else {
-
-		   username = principal.toString();
-
-		}
+	@ResponseBody
+	public ResponseEntity<?> currentUserName(HttpServletRequest request) {
 		
-        return username;
-    }
-
-	
-	
-	
-	@CrossOrigin
-	@GetMapping("/homepage")
-	public void homepage(HttpServletResponse httpResponse)throws Exception {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-		String username = "";
-		if (principal instanceof UserDetails) {
-
-			username = ((UserDetails)principal).getUsername();
-
-		} else {
-
-		   username = principal.toString();
-
-		}
+		String username=JwtUtil.getUsernameFromToken(request);
 		
-				httpResponse.sendRedirect("http://127.0.0.1:3000/homepage?user="+username);
+		if(!username.equals("")) {
 			
-	    
+			return new ResponseEntity<String>(username, HttpStatus.OK); //200
+		}
+		
+		return new ResponseEntity<Error>(HttpStatus.NOT_FOUND); //404 user dont exist
 	}
-	
-	
-	/*private String getJWTToken(String username) {
-		String secretKey = "mySecretKey";
-		List grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER");
 
-		String token = Jwts.builder().setId("softtekJWT").setSubject(username)
-				.claim("authorities",
-						grantedAuthorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 600000))
-				.signWith(SignatureAlgorithm.HS512, secretKey.getBytes()).compact();
+	@CrossOrigin
+	@PostMapping("/homepage")
+	public void homepage(HttpServletResponse httpResponse) throws Exception {
+		/*
+		 * Object principal =
+		 * SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		 * 
+		 * String username = ""; if (principal instanceof UserDetails) {
+		 * 
+		 * username = ((UserDetails) principal).getUsername();
+		 * 
+		 * } else {
+		 * 
+		 * username = principal.toString();
+		 * 
+		 * }
+		 */
 
-		return "Bearer " + token;
-	}*/
+		/*
+		 * String jwt = getJWTToken(username);
+		 * 
+		 * httpResponse.setContentType("application/json");
+		 * httpResponse.setCharacterEncoding("UTF-8");
+		 * httpResponse.setStatus(HttpStatus.CREATED.value());
+		 * httpResponse.setHeader(TOKEN_HEADER, TOKEN_PREFIX + jwt);
+		 */
+
+		// httpResponse.sendRedirect("http://127.0.0.1:3000/homepage?user=" + username);
+
+	}
+
 }
