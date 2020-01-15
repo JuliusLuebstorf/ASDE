@@ -33,7 +33,6 @@ import LooksOneIcon from '@material-ui/icons/LooksOne';
 import LooksTwoIcon from '@material-ui/icons/LooksTwo';
 import Looks3Icon from '@material-ui/icons/Looks3';
 import HomeIcon from '@material-ui/icons/Home';
-import Leaderboard from './Leaderboard';
 import HomeScreen from './HomeScreen';
 import GameFields from '../TicTacToe/GameFields';
 import TTTGameSelection from '../TicTacToe/TTTGameSelection';

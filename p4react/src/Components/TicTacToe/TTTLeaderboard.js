@@ -10,7 +10,7 @@ import LooksOneIcon from '@material-ui/icons/LooksOne';
 import LooksTwoIcon from '@material-ui/icons/LooksTwo';
 import Looks3Icon from '@material-ui/icons/Looks3';
 
-class Leaderboard extends React.Component {
+class TTTLeaderboard extends React.Component {
 
     render() {
         return (
@@ -22,7 +22,7 @@ class Leaderboard extends React.Component {
                       <LooksOneIcon />
                     </Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary="Rank 1" secondary="Coming Soon." />
+                  <ListItemText primary="Rank 1" secondary={this.props.first}/>
                   </ListItem>
                   
                     <ListItem>
@@ -31,7 +31,7 @@ class Leaderboard extends React.Component {
                           <LooksTwoIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText primary="Rank 2" secondary="Coming soon." />
+                      <ListItemText primary="Rank 2" secondary={this.props.second} />
                       </ListItem>
 
                       <ListItem>
@@ -40,7 +40,7 @@ class Leaderboard extends React.Component {
                           <Looks3Icon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText primary="Rank 3" secondary="Coming soon." />
+                      <ListItemText primary="Rank 3" secondary={this.props.third} />
                       </ListItem>
 
                 </List>
@@ -48,4 +48,4 @@ class Leaderboard extends React.Component {
     }
 }
 
-export default Leaderboard;
+export default TTTLeaderboard;
