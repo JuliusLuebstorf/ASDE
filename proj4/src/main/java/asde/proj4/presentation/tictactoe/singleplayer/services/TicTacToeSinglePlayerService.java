@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TicTacToeSinglePlayerService {
-	public synchronized MoveDTO move(final GridDTO gridAdapter) {
-		return MoveDTO.getArrayMove(gridAdapter);
+	public synchronized MoveDTO move(final GridDTO gridDTO) {
+		return MoveDTO.getArrayMove(gridDTO);
 	}
 }

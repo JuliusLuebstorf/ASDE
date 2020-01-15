@@ -47,8 +47,8 @@ class GameBoardSP extends React.Component {
       }
 
     moveAI = (array) => {
-        let changedArray = array; 
-        ServiceClient.post("/singleplayer/move", {character: "X", array: changedArray}
+        let changedArray = array;
+        ServiceClient.post("/singleplayer/move", {character: "X", gridArray: changedArray}
         ).then((res)=> {
             console.log(res.data.array);
             console.log(res.data);

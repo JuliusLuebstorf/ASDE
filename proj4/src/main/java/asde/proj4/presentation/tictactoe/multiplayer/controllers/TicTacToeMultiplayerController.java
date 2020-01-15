@@ -2,6 +2,8 @@ package asde.proj4.presentation.tictactoe.multiplayer.controllers;
 
 import asde.proj4.presentation.tictactoe.multiplayer.services.TicTacToeMultiplayerService;
 import asde.proj4.presentation.tictactoe.util.GameDTO;
+import asde.proj4.presentation.tictactoe.util.PlayerDTO;
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,14 +20,14 @@ public class TicTacToeMultiplayerController {
 	
 	@CrossOrigin
 	@GetMapping("/multiplayer/newGame")
-	public void newGame() {
-		ticTacToeMultiplayerService.newGame();
+	public void newGame(@RequestParam final String player) {
+		ticTacToeMultiplayerService.newGame(player);
 	}
 	
 	@CrossOrigin
-	@GetMapping("/multiplayer/joinGame")
-	public void joinGame(@RequestParam final int gameID) {
-		ticTacToeMultiplayerService.joinGame(gameID);
+	@PostMapping("/multiplayer/joinGame")
+	public boolean joinGame(@RequestBody final GameDTO gameDTO) {
+		return ticTacToeMultiplayerService.joinGame(gameDTO);
 	}
 	
 	@CrossOrigin
@@ -36,19 +38,37 @@ public class TicTacToeMultiplayerController {
 	
 	@CrossOrigin
 	@PostMapping("/multiplayer/move")
-	public void setGrid(@RequestBody final GameDTO gameDTO) {
-		ticTacToeMultiplayerService.setGrid(gameDTO);
+	public String move(@RequestBody final GameDTO gameDTO) {
+		return ticTacToeMultiplayerService.move(gameDTO);
 	}
 	
 	@CrossOrigin
-	@GetMapping("/multiplayer/getWaitingGames")
-	public List <GameDTO> getWaitingGames() {
-		return ticTacToeMultiplayerService.getWaitingGames();
+	@GetMapping("/multiplayer/getGames")
+	public List <GameDTO> getGames() {
+		return ticTacToeMultiplayerService.getGames();
 	}
 	
 	@CrossOrigin
 	@GetMapping("/multiplayer/endGame")
-	public void endGame(@RequestParam final int gameID) {
-		ticTacToeMultiplayerService.endGame(gameID);
+	public void endGame(@RequestParam final int gameID, @RequestParam final String user) {
+		ticTacToeMultiplayerService.endGame(gameID, user);
+	}
+	
+	@CrossOrigin
+	@PostMapping("/multiplayer/get")
+	public PlayerDTO get(@RequestBody final GameDTO gameDTO) {
+		return ticTacToeMultiplayerService.get(gameDTO);
+	}
+	
+	@CrossOrigin
+	@GetMapping("/multiplayer/update")
+	public GameDTO update(@RequestParam final int gameID) {
+		return ticTacToeMultiplayerService.update(gameID);
+	}
+	
+	@CrossOrigin
+	@GetMapping("/multiplayer/isRunning")
+	public boolean isRunning(@RequestParam final int gameID) {
+		return ticTacToeMultiplayerService.isRunning(gameID);
 	}
 }

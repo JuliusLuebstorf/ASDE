@@ -4,6 +4,8 @@ import './App.css';
 
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
+import GameBoard from './Components/TicTacToe/GameBoardSP';
+
 import Lobby from './Components/Lobby/Lobby';
 import SignIn from './Components/Login/SignIn';
 import UpdatePassword from './Components/Login/UpdatePassword';
