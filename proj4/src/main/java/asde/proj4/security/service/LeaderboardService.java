@@ -2,10 +2,13 @@ package asde.proj4.security.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import asde.proj4.security.dao.UserPlayerDAO;
 import asde.proj4.security.domain.UserPlayer;
 import asde.proj4.security.util.LeaderboardSorter;
 
+@Service
 public class LeaderboardService {
 	
 	public UserPlayerDAO userPlayerDAO;
