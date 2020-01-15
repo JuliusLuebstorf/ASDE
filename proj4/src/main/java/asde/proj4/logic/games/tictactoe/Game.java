@@ -2,83 +2,90 @@ package asde.proj4.logic.games.tictactoe;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Game implements Runnable {
-	public static int games;
-	public static final int WAITING = 1, RUNNING = 2, OVER = 0;
+public class Game {
+	public static final int WAITING = 0, RUNNING = 1, OVER = -1;
 	public final int ID;
 	private Grid grid;
-	private volatile int status;
-	private String[] players = new String[2];
-	private int turn = ThreadLocalRandom.current().nextInt(players.length);
-	private Thread timer;
+	private int noPlayers = 0;
+	private Player[] players = new Player[2];
+	private Player[] observers;
+	private int status;
+	private int turn = ThreadLocalRandom.current().nextInt(noPlayers + 1);
 	
-	public Game() {
-		ID = games++;
+	public Game(final int id, final boolean newGrid) {
+		ID = id;
 		
-		setStatus(WAITING);
+		if(newGrid)
+			grid = new Grid();
 	}
 	
 	public Grid getGrid() {
 		return grid;
 	}
 	
-	public void setGrid(final Grid grid, final String player) {
-		if(timer.isAlive() && players[turn++ % 2].equals(player)) {
-			this.grid = grid;
-			
-			resetTimer();
-		}
+	public void setGrid(final Grid grid) {
+		this.turn = (turn + 1) % noPlayers;
+		this.grid = grid;
 	}
 	
-	public int getStatus() {
-		return status;
-	}
-	
-	public void setStatus(final int status) {
-		if(status != WAITING && status != RUNNING && status != OVER)
-			throw new IllegalArgumentException("Invalid status: " + status);
-		
-		this.status = status;
-		
-		if(status == RUNNING)
-			resetTimer();
-	}
-
-	public String[] getPlayers() {
+	public Player[] getPlayers() {
 		return players;
 	}
 	
-	public void setPlayers(final String player1, final String player2) {
+	public void setPlayer1(final Player player1) throws Exception {
+		if(players[0] != null)
+			throw new Exception("Player1 already set");
+		
 		players[0] = player1;
+		noPlayers = 1; 
+	}
+	
+	public void setPlayer2(final Player player2) throws Exception {
+		if(players[1] != null)
+			throw new Exception("Player2 already set");
+		
 		players[1] = player2;
+		noPlayers = 2;
 	}
 	
-	private void resetTimer() {
-		(timer  = new Thread(this)).start();
-	}
-	
-	public String getCurrentPlayer() {
+	public Player getCurrentPlayer() {
 		return players[turn];
 	}
 	
-	public String getStatusString() {
-		switch(status) {
-			case WAITING: return "Waiting";
-			case RUNNING: return "Running";
-			case OVER: return "Over";
-			default: System.err.println("Fatal error"); System.exit(-1); return "";
-		}
+	public Character getSymbolFromPlayerId(final String playerID) {
+		if(players[0] != null && players[0].getId().equals(playerID))
+			return 'X';
+		else if(players[1] != null && players[1].getId().equals(playerID))
+			return 'O';
+		
+		return null;
+	}
+
+	public Player[] getObservers() {
+		return observers;
+	}
+
+	public void setObservers(final Player[] observers) {
+		this.observers = observers;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(final int status) {
+		if(status != WAITING && status != RUNNING && status != OVER)
+			throw new IllegalArgumentException("Invalid input " + status);
+		
+		this.status = status;
 	}
 	
-	@Override
-	public void run() {
-		int counter = 30;
-		
-		while(counter-- > 30 && status == RUNNING)
-			try {
-				Thread.sleep(1000);
-			} catch (final InterruptedException exception) {
-				exception.printStackTrace();
-			}
+	public String getStatusString() {
+		switch(this.status) {
+			case OVER: return "Over";
+			case RUNNING: return "Running";
+			case WAITING: return "Waiting";
+			default: throw new IllegalArgumentException("Invalid input " + status);
+		}
 	}
 }
