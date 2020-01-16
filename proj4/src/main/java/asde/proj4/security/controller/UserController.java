@@ -69,6 +69,8 @@ public class UserController {
 		
 		if(sc.getAuthentication().isAuthenticated()) {
 			
+			userDAO.findByUsername(username).setLastLoginTime(System.currentTimeMillis());
+			
 			String token = JwtUtil.makeToken(username);
 			//return token;
 			return new ResponseEntity<String>(token, HttpStatus.OK); //200
