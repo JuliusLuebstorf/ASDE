@@ -37,6 +37,13 @@ public class LeaderboardService {
 			return leaderList;
 		}
 	}
+	
+	public void updateScores(UserPlayer winner, UserPlayer loser, boolean draw) {
+		if (!draw) {
+			winner.setTicTacToeScore(1);
+			loser.setTicTacToeScore(-1);
+		}
+	}
 
 }
 
