@@ -1,46 +1,36 @@
-import React from 'react';
-import clsx from 'clsx';
-import { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Drawer from '@material-ui/core/Drawer';
-import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
+import Avatar from '@material-ui/core/Avatar';
+import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Divider from '@material-ui/core/Divider';
+import Drawer from '@material-ui/core/Drawer';
+import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import MenuIcon from '@material-ui/icons/Menu';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import AppsIcon from '@material-ui/icons/Apps';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import Fab from '@material-ui/core/Fab';
-import AppsIcon from '@material-ui/icons/Apps';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import GameBoardSP from '../TicTacToe/GameBoardSP';
-import PanToolIcon from '@material-ui/icons/PanTool';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import LooksOneIcon from '@material-ui/icons/LooksOne';
-import LooksTwoIcon from '@material-ui/icons/LooksTwo';
-import Looks3Icon from '@material-ui/icons/Looks3';
 import HomeIcon from '@material-ui/icons/Home';
-import HomeScreen from './HomeScreen';
-import GameFields from '../TicTacToe/GameFields';
+import MenuIcon from '@material-ui/icons/Menu';
+import clsx from 'clsx';
+import React, { useEffect } from 'react';
+import { useLocation } from "react-router-dom";
 import TTTGameSelection from '../TicTacToe/TTTGameSelection';
+import HomeScreen from './HomeScreen';
+import LocalStorageService from '../../Services/LocalStorageService';
+import ReactDOM from 'react-dom';
+import SignIn from '../Login/SignIn';
 import ServiceClient from '../../Services/ServiceClient';
-
-import {
-  useLocation
-} from "react-router-dom";
 
 
 function Copyright() {
@@ -160,29 +150,50 @@ export default function Lobby() {
       setOpen(false);
     };
 
-    function logout(){
-      //onClick={logout}
-      /*ServiceClient.get("/logout").then((res) => {
-      })*/
-
-      
-
+    function logout() {
+      const localStorageService = LocalStorageService.getService();
+      localStorageService.setToken("");
+  
+      ReactDOM.render(<SignIn />, document.getElementById('root'));
+  
+      /*ServiceClient.getAxiosInstance(true).get("/logout")
+        .then((res) => {
+          console.log(res.data);
+  
+          alert("logout");
+          localStorageService.setToken("");
+  
+          // this.props.updateUsers();
+        })*/
+  
+      //href = "http://localhost:8080/logout"
+  
     }
 
-    var query = null;
-      try {
-      const location = useLocation();
-      query = location!=null? new URLSearchParams(location.search):null; 
-      
-      } catch (error) {
-          
-      }
+    
 
     useEffect(() => {
-     
-     setCurrentUser((query!=null ) ?query.get('user'):"");
 
-
+      //setCurrentUser((query != null) ? query.get('user') : "");
+  
+      ServiceClient.getAxiosInstance().get("/currentUserName")
+      .then(function (response) {
+        console.log(response.data);
+        console.log(response.status);
+  
+        
+        if (response.status === 200) {
+          setCurrentUser(response.data);
+        }
+  
+    }).catch(function (error) {
+        console.log(error);
+        //console.log(error.response.status);
+        if (error.response.status === 401 || error.response.status === 404) {
+          ReactDOM.render(<SignIn />, document.getElementById('root'));
+        }
+    })
+  
     }, []);
     
 

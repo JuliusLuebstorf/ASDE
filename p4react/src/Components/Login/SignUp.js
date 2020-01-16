@@ -21,6 +21,9 @@ import icon from '../../resources/icons/Tic-Tac-Toe-Game-256.png';
 import {
   useLocation
 } from "react-router-dom";
+import ServiceClient from '../../Services/ServiceClient';
+import LocalStorageService from '../../Services/LocalStorageService';
+import Validate from '../../util/Validate';
 
 function Copyright() {
   return (
@@ -56,17 +59,66 @@ const useStyles = makeStyles(theme => ({
 export default function SignUp() {
   const classes = useStyles();
 
-  var query = null;
-  try {
-    const location = useLocation();
-    query = location != null ? new URLSearchParams(location.search) : null;
+  const [username, setUsername] = React.useState('');
+  const [pass, setPass] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [msg, setMsg] = React.useState('');
 
-  } catch (error) {
-  }
-  const msg = (query != null && query.get('msg') === 'addUser_problem') ? "User or Email already exist" : "";
+  //For validators
+  const [usernameV, setUsernameV] = React.useState(false);
+  const [passV, setPassV] = React.useState(false);
+  const [emailV, setEmailV] = React.useState(false);
+
 
   function openLogin() {
     ReactDOM.render(<SignIn />, document.getElementById('root'));
+  }
+
+  function submit() {
+
+    var userProblem = !Validate.validatePassword_User(username);
+    setUsernameV(userProblem);
+
+    var passProblem = !Validate.validatePassword_Pass(pass);
+    setPassV(passProblem);
+
+    var emailProblem = !Validate.validateEmail(email);
+    setEmailV(emailProblem);
+
+    if (!userProblem && !passProblem && !emailProblem) {
+      const querystring = require('querystring');
+
+      ServiceClient.getAxiosInstance(true)({
+        method: 'post',
+        url: '/addUser',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        data: querystring.stringify({
+          username: username,
+          pass: pass,
+          email: email
+        })
+      }).then(function (response) {
+        console.log(response.status);
+
+        if (response.status === 200) {
+          ReactDOM.render(<SignIn />, document.getElementById('root'));
+        }
+
+
+      }).catch(function (error) {
+        console.log(error);
+
+        if (error.response.status === 500) {
+          setMsg("Problem in saving the user");
+        } else if (error.response.status === 409) {
+          setMsg("This User or Email already exist and needs to be unique");
+        }
+
+        //console.log(error.response.status);
+
+      })
+
+    }
   }
 
   return (
@@ -83,10 +135,13 @@ export default function SignUp() {
           Sign up
         </Typography>
         <Typography component="h4" variant="h10" color='error'>
-                {msg}
+          {msg}
         </Typography>
-        <form action="http://localhost:8080/addUser" className={classes.form} noValidate>
+        <form /*action="http://localhost:8080/addUser"*/ className={classes.form} noValidate>
           <TextField
+            error={usernameV}
+            helperText={usernameV ? "The user name is not correct written. It must has 4 character as minimun and 10 as maximun." : ""}
+
             variant="outlined"
             margin="normal"
             required
@@ -96,36 +151,48 @@ export default function SignUp() {
             name="username"
             autoComplete="username"
             autoFocus
+            onChange={(e) => setUsername(e.target.value)}
           />
 
           <TextField
-            variant="outlined"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-          />
+            error={passV}
+            helperText={passV ? 'The password must be composed at least by: one upper character, one lower character, one digit, one special character. It does not has blank space; besides, six characters as minimun and 10 as maximun.' : ""}
 
-          <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
-            name="pass"
+            name="password"
             label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
+            onChange={(e) => setPass(e.target.value)}
+          />
+
+          <TextField
+          error={emailV}
+          helperText={emailV ? "The email is not correct written" : ""}
+
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="email"
+            label="Email"
+            id="email"
+            autoComplete="current-password"
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <Button
-            type="submit"
+            type="Button"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={submit}
+
           >
             Sign Up
           </Button>

@@ -13,6 +13,7 @@ public class UserPlayer{
 	private String pass;
 	private String email;
 	private Integer ticTacToeScore;
+	private long lastLoginTime;
 	public UserPlayer(String username, String pass, String email) {
 		super();
 		this.username = username;
@@ -48,6 +49,12 @@ public class UserPlayer{
 	}
 	public void setTicTacToeScore(Integer score) {
 		this.ticTacToeScore += score;
+	}
+	public long getLastLoginTime() {
+		return lastLoginTime;
+	}
+	public void setLastLoginTime(long lastLoginTime) {
+		this.lastLoginTime = lastLoginTime;
 	}
 
 	
