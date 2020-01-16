@@ -38,10 +38,15 @@ public class LeaderboardService {
 		}
 	}
 	
-	public void updateScores(UserPlayer winner, UserPlayer loser, boolean draw) {
+
+	public void updateScores(String winner, String loser, boolean draw) {
+		
+		UserPlayer winnerPlayer = userPlayerDAO.findByUsername(winner);
+		UserPlayer loserPlayer = userPlayerDAO.findByUsername(loser);
+		
 		if (!draw) {
-			winner.setTicTacToeScore(1);
-			loser.setTicTacToeScore(-1);
+			winnerPlayer.setTicTacToeScore(1);
+			loserPlayer.setTicTacToeScore(-1);
 		}
 	}
 
