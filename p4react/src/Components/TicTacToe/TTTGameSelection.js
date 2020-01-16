@@ -24,8 +24,9 @@ class TTTGameSelection extends React.Component {
             third: "-"
         }
 
-        ServiceClient.get("/multiplayer/leaderboard", {params: {gameType: "TicTacToe"}}
-            ).then((res)=> {
+        ServiceClient.getAxiosInstance().get("/multiplayer/leaderboard", {params: {gameType: "TicTacToe"}
+        })
+        .then((res)=> {
                 let newList = res.data;
                 newList.slice();
                 if (res.data.length === 0) {
@@ -34,7 +35,6 @@ class TTTGameSelection extends React.Component {
                     this.setState({first: newList[0]});
                 } else if (res.data.length === 2) {
                     this.setState({first: newList[0], second: newList[1]});
-                    console.log("test");
                 } else {
                     this.setState({first: newList[0], second: newList[1], third: newList[2]});
                 }

@@ -16,7 +16,7 @@ public class TicTacToeSinglePlayerController {
 	
 	@CrossOrigin
 	@PostMapping("/singleplayer/move")
-	public MoveDTO move(@RequestBody final GridDTO gridDTO) {
+	public MoveDTO move(final GridDTO gridDTO) {
 		return ticTacToeSinglePlayerService.move(gridDTO);
 	}
 }
