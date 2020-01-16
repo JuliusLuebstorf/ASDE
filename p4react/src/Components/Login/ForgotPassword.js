@@ -19,7 +19,11 @@ import SignIn from './SignIn';
 import icon from '../../resources/icons/Tic-Tac-Toe-Game-256.png';
 import {
     useLocation
-  } from "react-router-dom";
+} from "react-router-dom";
+
+import UpdatePassword from './UpdatePassword';
+import ServiceClient from '../../Services/ServiceClient';
+import Validate from '../../util/Validate';
 
 function Copyright() {
     return (
@@ -55,21 +59,58 @@ const useStyles = makeStyles(theme => ({
 export default function ForgotPassword() {
     const classes = useStyles();
 
+    const [msg, setMsg] = React.useState('');
+    const [email, setEmail] = React.useState('');
+
+
+    const [emailV, setEmailV] = React.useState(false);
+
     function openLogin() {
         ReactDOM.render(<SignIn />, document.getElementById('root'));
     }
 
-    var query = null;
-    try {
-    const location = useLocation();
-    query = location!=null? new URLSearchParams(location.search):null; 
-    
-    } catch (error) {
+    function recoveryPassword() {
+
+        var emailProblem = !Validate.validateEmail(email);
+        setEmailV(emailProblem);
+
+
+        if (!emailProblem) {
+            const querystring = require('querystring');
+
+            ServiceClient.getAxiosInstance(true)({
+                method: 'post',
+                url: '/recoveryPass',
+                headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                data: querystring.stringify({
+                    email: email,
+                })
+
+            }).then(function (response) {
+                console.log(response.data);
+
+                if (response.status === 200) {
+                    ReactDOM.render(<UpdatePassword />, document.getElementById('root'));
+                }
+
+
+            }).catch(function (error) {
+                console.log(error.status + ' - ' + error.statusText);
+                if (error.response.status === 404) {
+                    setMsg("The email don't exist or is incorrect");
+                } else if (error.response.status === 500) {
+                    setMsg("Exist some problem with the network");
+                }
+
+            })
+
+
+        }
     }
-    const msg = (query!=null && query.get('msg') === 'email_incorrect')?"The email don't exist or is incorrect":"";
 
     return (
         <Container component="main" maxWidth="xs">
+
             <CssBaseline />
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
@@ -78,12 +119,15 @@ export default function ForgotPassword() {
                 <Typography component="h1" variant="h5">
                     Forgot Password
         </Typography>
-        <Typography component="h4" variant="h10" color='error'>
-                {msg}
-        </Typography>
-                <form action="http://localhost:8080/recoveryPass" className={classes.form} noValidate>
+                <Typography component="h4" variant="h10" color='error'>
+                    {msg}
+                </Typography>
+                <form /*action="http://localhost:8080/recoveryPass"*/ className={classes.form} noValidate>
 
                     <TextField
+                    error={emailV}
+                    helperText={emailV ? "The email is not correct written" : ""}
+                    
                         variant="outlined"
                         required
                         fullWidth
@@ -91,14 +135,15 @@ export default function ForgotPassword() {
                         label="Email Address"
                         name="email"
                         autoComplete="email"
+                        onChange={(e) => setEmail(e.target.value)}
                     />
 
                     <Button
-                        type="submit"
                         fullWidth
                         variant="contained"
                         color="primary"
                         className={classes.submit}
+                        onClick={recoveryPassword}
                     >
                         Send New Password
           </Button>

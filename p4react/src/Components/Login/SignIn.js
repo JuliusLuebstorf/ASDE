@@ -1,27 +1,26 @@
-import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import axios from 'axios';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import CreateUser from './CreateUser';
-import SignUp from './SignUp';
-import ForgotPassword from './ForgotPassword';
+import { useLocation } from "react-router-dom";
 import icon from '../../resources/icons/Tic-Tac-Toe-Game-256.png';
-
-import {
-    useLocation
-  } from "react-router-dom";
+import LocalStorageService from '../../Services/LocalStorageService';
+import SignUp from './SignUp';
 import ServiceClient from '../../Services/ServiceClient';
+import ForgotPassword from './ForgotPassword';
+import Lobby from '../Lobby/Lobby';
+import Validate from '../../util/Validate';
+
+
 
 function Copyright() {
     return (
@@ -57,45 +56,80 @@ const useStyles = makeStyles(theme => ({
 export default function SignIn() {
     const classes = useStyles();
 
-    const [username, setUsername] = React.useState(true);
+    const [username, setUsername] = React.useState("");
     const [pass, setPass] = React.useState('');
+    const [msg, setMsg] = React.useState('');
 
-    var query = null;
+    const [usernameV, setUsernameV] = React.useState(false);
+    const [passV, setPassV] = React.useState(false);
+
+    /*var query = null;
     try {
-    const location = useLocation();
-    query = location!=null? new URLSearchParams(location.search):null; 
-    
+        const location = useLocation();
+        query = location != null ? new URLSearchParams(location.search) : null;
+
     } catch (error) {
-        
+
     }
-    const msg = (query!=null && query.get('msg') === 'login_incorrect') ?"User or Password incorrect":"";
-    
+    const msg = (query != null && query.get('msg') === 'login_incorrect') ? "User or Password incorrect" : "";
+*/
     //console.log(query.get('msg'))  {this.props.location.search}
 
-    function updateUsername(e){
+    /*function updateUsername(e) {
 
         setUsername(e.target.value);
     }
 
-    function updatePass(e){
+    function updatePass(e) {
         setPass(e.target.value);
 
+    }*/
+
+    function submit() {
+
+
+        var userT = !Validate.validatePassword_User(username);
+        setUsernameV(userT);
+
+        var passT = !Validate.validatePassword_Pass(pass);
+        setPassV(passT);
+
+        
+        if (!userT && !passT) {
+            const localStorageService = LocalStorageService.getService();
+            const querystring = require('querystring');
+
+            ServiceClient.getAxiosInstance(true)({
+                method: 'post',
+                url: '/perform_login',
+                headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                data: querystring.stringify({
+                    username: username,
+                    password: pass
+                })
+            }).then(function (response) {
+                console.log(response.data);
+                console.log(response.status);
+
+                localStorageService.setToken(response.data);
+
+                if (response.status === 200) {
+                    ReactDOM.render(<Lobby />, document.getElementById('root'));
+                }
+
+            }).catch(function (error) {
+                //console.log(error);
+                //console.log(error.response.status);
+                if (error.response.status === 401) {
+                    setMsg("User or Password incorrect");
+
+                    localStorageService.setToken("");
+                }
+            })
+        }
+
     }
 
-    function submit(){
-        ServiceClient.post("/perform_login", {
-            params: { username: username, password: pass}
-          }).then((res) => {
-      
-            alert(res.data);
-            //console.log(res.data);
-      
-            // this.props.updateUsers();
-          })
-
-       
-    }
-  
     function openCreateUser() {
         ReactDOM.render(<SignUp />, document.getElementById('root'));
     }
@@ -107,13 +141,10 @@ export default function SignIn() {
     function login(e) {
         alert(e);
     }
-    
-    
+
+
 
     return (
-        
-
-
         <Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>
@@ -121,13 +152,17 @@ export default function SignIn() {
                     <img src={icon} />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                 Sign in
+                    Sign in
         </Typography>
-        <Typography component="h4" variant="h10" color='error'>
-                {msg}
-        </Typography>
-               <form action="http://localhost:8080/perform_login" noValidate autoComplete="off" method = "POST" /*onSubmit={submit}*/>
+                <Typography component="h4" variant="h10" color='error'>
+                    {msg}
+                </Typography>
+                <form /*action="http://localhost:8080/perform_login"*/ /*noValidate autoComplete="off" method="get" onSubmit={submit}*/>
                     <TextField
+
+                        error={usernameV}
+                        helperText={usernameV ? "The user name is not correct written. It must has 4 character as minimun and 10 as maximun." : ""}
+
                         variant="outlined"
                         margin="normal"
                         required
@@ -137,10 +172,13 @@ export default function SignIn() {
                         name="username"
                         autoComplete="username"
                         autoFocus
-                        onChange={updateUsername}
+                        onChange={(e) => setUsername(e.target.value)}
                     />
 
                     <TextField
+                        error={passV}
+                        helperText={passV ? 'The password must be composed at least by: one upper character, one lower character, one digit, one special character. It does not has blank space; besides, six characters as minimun and 10 as maximun.' : ""}
+
                         variant="outlined"
                         margin="normal"
                         required
@@ -150,16 +188,17 @@ export default function SignIn() {
                         type="password"
                         id="password"
                         autoComplete="current-password"
-                        onChange={updatePass}
+                        onChange={(e) => setPass(e.target.value)}
                     />
 
                     <Button
-                        type="submit"
+                        type="Button"
                         fullWidth
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        
+                        onClick={submit}
+
                     >
                         Sign In
           </Button>
