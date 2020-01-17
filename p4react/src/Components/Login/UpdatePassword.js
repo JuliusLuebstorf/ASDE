@@ -16,6 +16,9 @@ import ReactDOM from 'react-dom';
 import CreateUser from './CreateUser';
 import SignIn from './SignIn';
 import icon from '../../resources/icons/Tic-Tac-Toe-Game-256.png';
+import LocalStorageService from '../../Services/LocalStorageService';
+import Validate from '../../util/Validate';
+import ServiceClient from '../../Services/ServiceClient';
 
 function Copyright() {
   return (
@@ -51,9 +54,80 @@ const useStyles = makeStyles(theme => ({
 export default function UpdatePassword() {
   const classes = useStyles();
 
+  const [username, setUsername] = React.useState('');
+  const [passTemp, setPassTemp] = React.useState('');
+  const [passNew, setPassNew] = React.useState('');
+
+  const [usernameV, setUsernameV] = React.useState(false);
+  const [passV, setPassV] = React.useState(false);
+  const [passTempV, setPassTempV] = React.useState(false);
+
+  const [msg, setMsg] = React.useState('');
+
+
   function openLogin() {
     ReactDOM.render(<SignIn />, document.getElementById('root'));
   }
+
+
+  function submit() {
+
+    setMsg("");
+
+    var userT = !Validate.validateUser(username);
+    setUsernameV(userT);
+
+    var passT = !Validate.validatePassword(passNew);
+    setPassV(passT);
+    
+    var passTempT = !Validate.validatePasswordTemp(passTemp);
+    setPassTempV(passTempT);
+
+    if (!userT && !passT && !passTempT) {
+      const localStorageService = LocalStorageService.getService();
+      const querystring = require('querystring');
+
+      ServiceClient.getAxiosInstance(true)({
+        method: 'post',
+        url: '/updatePass',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        data: querystring.stringify({
+          username: username,
+          oldPass: passTemp,
+          newPass: passNew
+        })
+      }).then(function (response) {
+        console.log(response.data);
+        console.log(response.status);
+
+        localStorageService.setToken(response.data);
+
+        if (response.status === 200) {
+          //setPassTempV(false);
+          ReactDOM.render(<SignIn />, document.getElementById('root'));
+        }
+
+      }).catch(function (error) {
+        //console.log(error);
+        //console.log(error.response.status);
+        if (error.response.status === 401) {
+          setMsg("The old password is not correct.");
+          //alert("The old password is not correct.");
+          setPassTempV(true);
+        }
+        else if (error.response.status === 500){           
+            setMsg("The process could not complete. Please, try again.");          
+        }
+        else if (error.response.status === 406){
+          setMsg("The user does not exist.");
+          setUsernameV(true);
+        }
+        localStorageService.setToken("");
+      })
+    }
+
+  }
+
 
   return (
     <Container component="main" maxWidth="xs">
@@ -65,8 +139,15 @@ export default function UpdatePassword() {
         <Typography component="h1" variant="h5">
           Update Password
         </Typography>
-        <form action="http://localhost:8080/updatePass" className={classes.form} noValidate>
+        <Typography component="h4" variant="h10" color='error'>
+          {msg}
+        </Typography>
+        <form /*action="http://localhost:8080/updatePass"*/ className={classes.form} noValidate>
           <TextField
+
+            error={usernameV}
+            helperText={usernameV ? "The user name is not correct written. It must has 4 character as minimun and 10 as maximun. No special characters, just letters and numbers." : ""}
+
             variant="outlined"
             margin="normal"
             required
@@ -76,9 +157,15 @@ export default function UpdatePassword() {
             name="username"
             autoComplete="username"
             autoFocus
+            onChange={(e) => setUsername(e.target.value)}
+            inputProps={{ maxLength: 10 }}
           />
 
           <TextField
+
+            error={passTempV}
+            helperText={passTempV ? "The temporal password is not correct written." : ""}
+
             variant="outlined"
             margin="normal"
             required
@@ -88,9 +175,15 @@ export default function UpdatePassword() {
             type="password"
             id="oldpassword"
             autoComplete="current-password"
+            onChange={(e) => setPassTemp(e.target.value)}
+            inputProps={{ maxLength: 5 }}
           />
 
           <TextField
+
+            error={passV}
+            helperText={passV ? 'The password must be composed at least by: one upper character, one lower character, one digit, one special character. It does not has blank space; besides, six characters as minimun and 10 as maximun.' : ""}
+
             variant="outlined"
             margin="normal"
             required
@@ -100,14 +193,17 @@ export default function UpdatePassword() {
             type="password"
             id="newpassword"
             autoComplete="current-password"
+            onChange={(e) => setPassNew(e.target.value)}
+            inputProps={{ maxLength: 10 }}
           />
 
           <Button
-            type="submit"
+            type="Button"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={submit}
           >
             Update Password
           </Button>
