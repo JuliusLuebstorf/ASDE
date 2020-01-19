@@ -214,7 +214,7 @@ export default function Lobby() {
             <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             {currentUser} Welcome to Game Lobby
             </Typography>
-            <Fab variant="extended" color="primary"  href="http://localhost:8080/logout" >
+            <Fab variant="extended" color="primary"  /*href="http://localhost:8080/logout"*/ onClick={logout}>
               <ExitToAppIcon />
                 Logout
             </Fab>
