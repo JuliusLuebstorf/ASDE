@@ -76,10 +76,10 @@ export default function SignUp() {
 
   function submit() {
 
-    var userProblem = !Validate.validatePassword_User(username);
+    var userProblem = !Validate.validateUser(username);
     setUsernameV(userProblem);
 
-    var passProblem = !Validate.validatePassword_Pass(pass);
+    var passProblem = !Validate.validatePassword(pass);
     setPassV(passProblem);
 
     var emailProblem = !Validate.validateEmail(email);
@@ -140,7 +140,7 @@ export default function SignUp() {
         <form /*action="http://localhost:8080/addUser"*/ className={classes.form} noValidate>
           <TextField
             error={usernameV}
-            helperText={usernameV ? "The user name is not correct written. It must has 4 character as minimun and 10 as maximun." : ""}
+            helperText={usernameV ? "The user name is not correct written. It must has 4 character as minimun and 10 as maximun. No special characters, just letters and numbers." : ""}
 
             variant="outlined"
             margin="normal"
@@ -152,6 +152,7 @@ export default function SignUp() {
             autoComplete="username"
             autoFocus
             onChange={(e) => setUsername(e.target.value)}
+            inputProps={{ maxLength: 10 }}
           />
 
           <TextField
@@ -168,6 +169,7 @@ export default function SignUp() {
             id="password"
             autoComplete="current-password"
             onChange={(e) => setPass(e.target.value)}
+            inputProps={{ maxLength: 10 }}
           />
 
           <TextField
@@ -183,6 +185,7 @@ export default function SignUp() {
             id="email"
             autoComplete="current-password"
             onChange={(e) => setEmail(e.target.value)}
+            inputProps={{ maxLength: 40 }}
           />
 
           <Button

@@ -25,13 +25,13 @@ class GameBoardMP extends React.Component {
         if(this.props.observer)
             this.startTimer();
         else
-            ServiceClient.post("/multiplayer/get", {gameID: this.props.gameID, currentPlayer: this.props.user, gridArray: this.state.fields}).then((res) => {
+            ServiceClient.getAxiosInstance().post("/multiplayer/get", {gameID: this.props.gameID, currentPlayer: this.props.user, gridArray: this.state.fields}).then((res) => {
                 this.setState({symbol: res.data.symbol, currentPlayer: res.data.player, fields: res.data.gridArray, winner: calculateWinner(res.data.gridArray)});
                 
                 if(this.state.winner === null)
                     this.startTimer();
                 else
-                    ServiceClient.get("/multiplayer/endGame?gameID=" + this.props.gameID + "&user=" + this.props.user);
+                    ServiceClient.getAxiosInstance().get("/multiplayer/endGameSetWinner?gameID=" + this.props.gameID + "&user=" + this.props.user + "&winnerSymbol=" + this.state.symbol);
             });
     }
 
@@ -45,12 +45,12 @@ class GameBoardMP extends React.Component {
         this.setState({fields: array, winner: calculateWinner(array)});
 
         if(this.state.winner === null) {
-            ServiceClient.post("/multiplayer/move", {gameID: this.props.gameID, currentPlayer: this.props.user, gridArray: array}).then((res)=> {
+            ServiceClient.getAxiosInstance().post("/multiplayer/move", {gameID: this.props.gameID, currentPlayer: this.props.user, gridArray: array}).then((res)=> {
                 this.setState({currentPlayer: res.data}); 
                 this.startTimer();
             });
         } else
-            ServiceClient.get("/multiplayer/endGame?gameID=" + this.props.gameID + "&user=" + this.props.user);
+            ServiceClient.getAxiosInstance().get("/multiplayer/endGameSetWinner?gameID=" + this.props.gameID + "&user=" + this.props.user + "&winnerSymbol=" + this.state.symbol);
     }
 
     render() {
@@ -104,9 +104,9 @@ class GameBoardMP extends React.Component {
             clearInterval(this.timer);
             
             if(!this.props.observer)
-                ServiceClient.get("/multiplayer/endGame?gameID=" + this.props.gameID + "&user=" + this.props.user);
+                ServiceClient.getAxiosInstance().get("/multiplayer/endGameSetWinner?gameID=" + this.props.gameID + "&user=" + this.props.user + "&winnerSymbol=" + this.state.symbol);
         } else
-            ServiceClient.get("multiplayer/update?gameID=" + this.props.gameID).then((res) => {
+            ServiceClient.getAxiosInstance().get("multiplayer/update?gameID=" + this.props.gameID).then((res) => {
                 this.setState({currentPlayer: res.data.currentPlayer, fields: res.data.gridArray, winner: calculateWinner(res.data.gridArray)});
 
                 if(this.state.currentPlayer === this.props.user)

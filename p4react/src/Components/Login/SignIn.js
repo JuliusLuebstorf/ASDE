@@ -88,10 +88,10 @@ export default function SignIn() {
     function submit() {
 
 
-        var userT = !Validate.validatePassword_User(username);
+        var userT = !Validate.validateUser(username);
         setUsernameV(userT);
 
-        var passT = !Validate.validatePassword_Pass(pass);
+        var passT = !Validate.validatePassword(pass);
         setPassV(passT);
 
         
@@ -153,7 +153,7 @@ export default function SignIn() {
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Sign in
-        </Typography>
+                </Typography>
                 <Typography component="h4" variant="h10" color='error'>
                     {msg}
                 </Typography>
@@ -161,7 +161,7 @@ export default function SignIn() {
                     <TextField
 
                         error={usernameV}
-                        helperText={usernameV ? "The user name is not correct written. It must has 4 character as minimun and 10 as maximun." : ""}
+                        helperText={usernameV ? "The user name is not correct written. It must has 4 character as minimun and 10 as maximun. No special characters, just letters and numbers." : ""}
 
                         variant="outlined"
                         margin="normal"
@@ -173,6 +173,7 @@ export default function SignIn() {
                         autoComplete="username"
                         autoFocus
                         onChange={(e) => setUsername(e.target.value)}
+                        inputProps={{ maxLength: 10 }}                        
                     />
 
                     <TextField
@@ -189,6 +190,7 @@ export default function SignIn() {
                         id="password"
                         autoComplete="current-password"
                         onChange={(e) => setPass(e.target.value)}
+                        inputProps={{ maxLength: 10 }}
                     />
 
                     <Button

@@ -25,7 +25,7 @@ export default class Validate {
     }
 
 
-    static validatePassword_User = (str) => {
+    static validateUser = (str) => {
         // at least one number, one lowercase and one uppercase letter
         // at least six characters
         //var re = /(?=.\d)(?=.[a-z])(?=.*[A-Z]).{6,}/;
@@ -38,7 +38,7 @@ export default class Validate {
         return re.test(str);
     }
 
-    static validatePassword_Pass = (str) => {
+    static validatePassword = (str) => {
         /*
         Minimo 8 caracteres
         Maximo 15
@@ -57,6 +57,16 @@ export default class Validate {
         not allow blank space
         */
        var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){6,10}$/;
+       console.log(re.test(str));
+       return re.test(str);
+    }
+
+    static validatePasswordTemp = (str) => {       
+
+        /*
+        validate that the temporal password is a number
+        */
+       var re = /^([0-9])*$/;
        console.log(re.test(str));
        return re.test(str);
     }

@@ -58,7 +58,8 @@ public class UserController {
 
 	@CrossOrigin
 	@PostMapping("/perform_login")
-	public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password, HttpServletRequest request) throws Exception {
+	public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password,
+			HttpServletRequest request) throws Exception {
 
 		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(username, password);
 		Authentication auth = authenticationManager.authenticate(authReq);
@@ -66,15 +67,17 @@ public class UserController {
 		sc.setAuthentication(auth);
 		HttpSession session = request.getSession(true);
 		session.setAttribute("SPRING_SECURITY_CONTEXT", sc);
-		
-		if(sc.getAuthentication().isAuthenticated()) {
-			
+
+		if (sc.getAuthentication().isAuthenticated()) {
+
+			userDAO.findByUsername(username).setLastLoginTime(System.currentTimeMillis());
+
 			String token = JwtUtil.makeToken(username);
-			//return token;
-			return new ResponseEntity<String>(token, HttpStatus.OK); //200
+			// return token;
+			return new ResponseEntity<String>(token, HttpStatus.OK); // 200
 		}
 
-		return new ResponseEntity<Error>(HttpStatus.UNAUTHORIZED); //401
+		return new ResponseEntity<Error>(HttpStatus.UNAUTHORIZED); // 401
 	}
 
 	@CrossOrigin
@@ -87,13 +90,13 @@ public class UserController {
 
 			if (user != null) {
 				// httpResponse.sendRedirect("http://127.0.0.1:3000/addUser?msg=addUser_problem");
-				return new ResponseEntity<Error>(HttpStatus.CONFLICT); //409 error el usuario o el email ya existen
+				return new ResponseEntity<Error>(HttpStatus.CONFLICT); // 409 error el usuario o el email ya existen
 			}
 
 			UserPlayer us = new UserPlayer(username, bcrypt.encode(pass), email);
 
 			if (userDAO.save(us) != null)
-				return new ResponseEntity<>(HttpStatus.OK); //200
+				return new ResponseEntity<>(HttpStatus.OK); // 200
 
 			// httpResponse.sendRedirect("http://127.0.0.1:3000/login");
 
@@ -101,20 +104,20 @@ public class UserController {
 			// httpResponse.sendRedirect("http://127.0.0.1:3000/addUser?msg=addUser_problem");
 		}
 
-		return new ResponseEntity<Error>(HttpStatus.INTERNAL_SERVER_ERROR); //500
-		
-		
+		return new ResponseEntity<Error>(HttpStatus.INTERNAL_SERVER_ERROR); // 500
+
 	}
 
 	@CrossOrigin
 	@PostMapping("/recoveryPass")
-	public ResponseEntity<?> recoveryPass(@RequestParam String email, HttpServletResponse httpResponse) throws Exception {
+	public ResponseEntity<?> recoveryPass(@RequestParam String email, HttpServletResponse httpResponse)
+			throws Exception {
 		try {
 			UserPlayer user = userDAO.findByEmail(email);
 
 			if (user == null) {
-				//httpResponse.sendRedirect("http://127.0.0.1:3000/recoveryPass?msg=email_incorrect");
-				return new ResponseEntity<Error>(HttpStatus.NOT_FOUND); //404 user dont exist
+				// httpResponse.sendRedirect("http://127.0.0.1:3000/recoveryPass?msg=email_incorrect");
+				return new ResponseEntity<Error>(HttpStatus.NOT_FOUND); // 404 user dont exist
 			}
 
 			String tempPass = System.currentTimeMillis() + "";
@@ -128,56 +131,64 @@ public class UserController {
 					+ tempPass;
 			sendEmail.sendEmail(email, subject, content);
 
-			//httpResponse.sendRedirect("http://127.0.0.1:3000/updatePass");
-			return new ResponseEntity<>(HttpStatus.OK); //200
-			
+			// httpResponse.sendRedirect("http://127.0.0.1:3000/updatePass");
+			return new ResponseEntity<>(HttpStatus.OK); // 200
+
 		} catch (Exception e) {
 
 			e.printStackTrace();
 
-			//httpResponse.sendRedirect("http://127.0.0.1:3000/recoveryPass?msg=problem");
-			return new ResponseEntity<Error>(HttpStatus.INTERNAL_SERVER_ERROR); //500
+			// httpResponse.sendRedirect("http://127.0.0.1:3000/recoveryPass?msg=problem");
+			return new ResponseEntity<Error>(HttpStatus.INTERNAL_SERVER_ERROR); // 500
 		}
 
 	}
 
 	@CrossOrigin
-	@GetMapping("/updatePass")
+	@PostMapping("/updatePass")
 	public ResponseEntity<?> changePass(@RequestParam String username, @RequestParam String oldPass,
 			@RequestParam String newPass) {
 		try {
 			UserPlayer user = userDAO.findByUsername(username);
 
-			
-			if (bcrypt.matches(oldPass, user.getPass())) {
+			if (user != null) {
+				if (bcrypt.matches(oldPass, user.getPass())) {
 
-				user.setPass(bcrypt.encode(newPass));
+					user.setPass(bcrypt.encode(newPass));
 
-				userDAO.save(user);
+					userDAO.save(user);
 
-				return new ResponseEntity<>(HttpStatus.OK); //200
+					return new ResponseEntity<>(HttpStatus.OK); // 200
+				} else {
+					return new ResponseEntity<Error>(HttpStatus.UNAUTHORIZED); // 401
+				}
 			}
+			// user does not exist
+			else {
+				return new ResponseEntity<Error>(HttpStatus.NOT_ACCEPTABLE); // 406
+			}
+
 		} catch (Exception e) {
 
 			e.printStackTrace();
 		}
 
-		return new ResponseEntity<Error>(HttpStatus.INTERNAL_SERVER_ERROR); //500
+		return new ResponseEntity<Error>(HttpStatus.INTERNAL_SERVER_ERROR); // 500
 	}
 
 	@CrossOrigin
 	@GetMapping("/currentUserName")
 	@ResponseBody
 	public ResponseEntity<?> currentUserName(HttpServletRequest request) {
-		
-		String username=JwtUtil.getUsernameFromToken(request);
-		
-		if(!username.equals("")) {
-			
-			return new ResponseEntity<String>(username, HttpStatus.OK); //200
+
+		String username = JwtUtil.getUsernameFromToken(request);
+
+		if (!username.equals("")) {
+
+			return new ResponseEntity<String>(username, HttpStatus.OK); // 200
 		}
-		
-		return new ResponseEntity<Error>(HttpStatus.NOT_FOUND); //404 user dont exist
+
+		return new ResponseEntity<Error>(HttpStatus.NOT_FOUND); // 404 user dont exist
 	}
 
 	@CrossOrigin

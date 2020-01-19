@@ -6,7 +6,6 @@ import asde.proj4.presentation.tictactoe.util.GridDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,7 +15,7 @@ public class TicTacToeSinglePlayerController {
 	
 	@CrossOrigin
 	@PostMapping("/singleplayer/move")
-	public MoveDTO move(@RequestBody final GridDTO gridDTO) {
+	public MoveDTO move(final GridDTO gridDTO) {
 		return ticTacToeSinglePlayerService.move(gridDTO);
 	}
 }

@@ -47,9 +47,14 @@ class GameBoardSP extends React.Component {
       }
 
     moveAI = (array) => {
+        const querystring = require('querystring');
         let changedArray = array;
-        ServiceClient.post("/singleplayer/move", {character: "X", gridArray: changedArray}
-        ).then((res)=> {
+        ServiceClient.getAxiosInstance()({method: 'post', 
+                                        url:"/singleplayer/move", 
+                                        headers: {'content-type': 'application/x-www-form-urlencoded'},
+                                        data: querystring.stringify({character: "X", gridArray: changedArray})
+                                        })
+        .then((res)=> {
             console.log(res.data.array);
             console.log(res.data);
             changedArray[res.data.position] = res.data.character

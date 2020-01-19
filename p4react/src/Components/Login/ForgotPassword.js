@@ -136,6 +136,7 @@ export default function ForgotPassword() {
                         name="email"
                         autoComplete="email"
                         onChange={(e) => setEmail(e.target.value)}
+                        inputProps={{ maxLength: 40 }}
                     />
 
                     <Button

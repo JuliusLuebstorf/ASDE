@@ -5,15 +5,21 @@ import asde.proj4.logic.games.tictactoe.Player;
 import asde.proj4.presentation.tictactoe.util.GameDTO;
 import asde.proj4.presentation.tictactoe.util.GridDTO;
 import asde.proj4.presentation.tictactoe.util.PlayerDTO;
+import asde.proj4.security.service.LeaderboardService;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TicTacToeMultiplayerService {
-	private static int ids = 1;
+	@Autowired
+	private LeaderboardService leaderboardService;
 	
+	private static int ids = 1;
 	private HashMap <Integer, Game> games = new HashMap <> ();
 	
 	private Game retrieve(final int gameID) {
@@ -78,18 +84,27 @@ public class TicTacToeMultiplayerService {
 	}
 	
 	public synchronized void endGame(final int gameID, final String user) {
-		final Game game = retrieve(gameID);
-		boolean flag = false;
+		final Game game = games.remove(gameID);
 		
-		for(final Player player : game.getPlayers())
-			if(player.getId().equals(user)) {
-				flag = true;
+		if(game == null || !game.getPlayers()[0].getId().equals(user))
+			throw new IllegalArgumentException("Invalid input " + gameID + "\t" + user);
 		
-				break;
-			}
+		game.setStatus(Game.OVER);
+	}
+	
+	public synchronized void endGameSetWinner(final int gameID, final String user, final String winnerSymbol) {
+		final Game game = games.remove(gameID);
 		
-		if(flag)
-			games.remove(gameID).setStatus(Game.OVER);
+		if(game == null)
+			return;
+		
+		if(winnerSymbol == null)
+			leaderboardService.updateScores(null, null, true, "TicTacToe");
+		else {
+			final String[] winnerAndLoser = game.getWinnerAndLoserIDs(winnerSymbol.charAt(0));
+			
+			leaderboardService.updateScores(winnerAndLoser[0], winnerAndLoser[1], false, "TicTacToe");
+		}
 	}
 	
 	public synchronized PlayerDTO get(final GameDTO gameDTO) {
@@ -108,5 +123,11 @@ public class TicTacToeMultiplayerService {
 		final Game game = games.get(gameID);
 		
 		return game == null ? false : game.getStatus() == Game.RUNNING;
+	}
+	
+	public synchronized boolean isPresent(final int gameID) {
+		final Game game = games.get(gameID);
+		
+		return game != null;
 	}
 }
