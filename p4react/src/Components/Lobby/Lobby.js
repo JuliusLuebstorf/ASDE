@@ -152,7 +152,8 @@ export default function Lobby() {
 
     function renderRedirect() {
       if (redirect) {
-        return <Redirect to='/login' />
+        window.location.assign('http://localhost:3000/login');
+        //return <Redirect to='/login' />
       }
     }
 
