@@ -33,7 +33,7 @@ class MatchList extends React.Component {
     }
 
     addGame() {
-        ServiceClient.get("/multiplayer/newGame?player=" + this.props.user);
+        ServiceClient.getAxiosInstance().get("/multiplayer/newGame?player=" + this.props.user);
     }
 
     countDown() {
@@ -44,16 +44,16 @@ class MatchList extends React.Component {
     }
 
     getGames() {
-        ServiceClient.get("/multiplayer/getGames").then((res)=> {
+        ServiceClient.getAxiosInstance().get("/multiplayer/getGames").then((res)=> {
             this.setState({matches: res.data});
         });
     }
 
     
     endGame(match) {
-        ServiceClient.get("/multiplayer/isRunning?gameID=" + match.gameID).then((res)=> {
+        ServiceClient.getAxiosInstance().get("/multiplayer/isRunning?gameID=" + match.gameID).then((res)=> {
             if(match.players[0] === this.props.user && !res.data) {
-                ServiceClient.get("/multiplayer/endGame?gameID=" + match.gameID + "&user=" + this.props.user);
+                ServiceClient.getAxiosInstance().get("/multiplayer/endGame?gameID=" + match.gameID + "&user=" + this.props.user);
                 this.setState({matches: []});
             } else
                 alert("Cannot end match...");
@@ -61,17 +61,22 @@ class MatchList extends React.Component {
     }
 
     startGame(match) {
-        if(match.gameStatus === "Waiting") {
-            ServiceClient.post("/multiplayer/joinGame", {gameID: match.gameID, currentPlayer: this.props.user}).then((res) => {
-                if(res.data === true)
-                    this.setState({currentMatch: match.gameID, matches: []});
-                else
-                    alert("Nobody joined yet...");
-            });
-        } else if(match.gameStatus === "Running" && match.players.includes(this.props.user))
-            this.setState({currentMatch: match.gameID, matches: []});
-        else if(match.gameStatus === "Running" && !match.players.includes(this.props.user))
-            alert("Cannot start match...");
+        ServiceClient.getAxiosInstance().get("/multiplayer/isPresent?gameID=" + match.gameID).then((res)=> {
+            if(!res.data)
+                return;
+
+            if(match.gameStatus === "Waiting") {
+                ServiceClient.getAxiosInstance().post("/multiplayer/joinGame", {gameID: match.gameID, currentPlayer: this.props.user}).then((res) => {
+                    if(res.data === true)
+                        this.setState({currentMatch: match.gameID, matches: []});
+                    else
+                        alert("Nobody joined yet...");
+                });
+            } else if(match.gameStatus === "Running" && match.players.includes(this.props.user))
+                this.setState({currentMatch: match.gameID, matches: []});
+            else if(match.gameStatus === "Running" && !match.players.includes(this.props.user))
+                alert("Cannot start match...");
+        });
     }
 
     render() {
@@ -106,7 +111,7 @@ class MatchList extends React.Component {
         if(match.gameStatus != "Running")
             alert("Match not started");
         else 
-            ServiceClient.get("/multiplayer/isRunning?gameID=" + match.gameID).then((res)=> {
+            ServiceClient.getAxiosInstance().get("/multiplayer/isRunning?gameID=" + match.gameID).then((res)=> {
                 if(res.data === true)
                     this.setState({currentMatch: match.gameID, matches: [], observer: true});
             });
