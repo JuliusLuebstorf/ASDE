@@ -55,6 +55,12 @@ public class TicTacToeMultiplayerController {
 	}
 	
 	@CrossOrigin
+	@GetMapping("/multiplayer/endGameSetWinner")
+	public void endGameSetWinner(@RequestParam final int gameID, @RequestParam final String user, @RequestParam final String winnerSymbol) {
+		ticTacToeMultiplayerService.endGameSetWinner(gameID, user, winnerSymbol);
+	}
+	
+	@CrossOrigin
 	@PostMapping("/multiplayer/get")
 	public PlayerDTO get(@RequestBody final GameDTO gameDTO) {
 		return ticTacToeMultiplayerService.get(gameDTO);
@@ -70,5 +76,11 @@ public class TicTacToeMultiplayerController {
 	@GetMapping("/multiplayer/isRunning")
 	public boolean isRunning(@RequestParam final int gameID) {
 		return ticTacToeMultiplayerService.isRunning(gameID);
+	}
+	
+	@CrossOrigin
+	@GetMapping("/multiplayer/isPresent")
+	public boolean isPresent(@RequestParam final int gameID) {
+		return ticTacToeMultiplayerService.isPresent(gameID);
 	}
 }

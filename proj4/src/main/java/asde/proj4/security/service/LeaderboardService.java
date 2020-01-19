@@ -43,9 +43,9 @@ public class LeaderboardService {
 		
 		UserPlayer winnerPlayer = userPlayerDAO.findByUsername(winner);
 		UserPlayer loserPlayer = userPlayerDAO.findByUsername(loser);
-		
+		System.out.println(winner + "\t" + loser + "\t" + draw);
 		if (!draw) {
-			if (gameType == "TicTacToe") {
+			if (gameType.contentEquals("TicTacToe")) {
 				winnerPlayer.setTicTacToeScore(1);
 				loserPlayer.setTicTacToeScore(-1);
 			}

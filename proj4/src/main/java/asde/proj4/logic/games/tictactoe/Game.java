@@ -61,6 +61,18 @@ public class Game {
 		return null;
 	}
 
+	public String[] getWinnerAndLoserIDs(final char winnerSymbol) {
+		if(winnerSymbol != 'X' && winnerSymbol != 'O')
+			throw new IllegalArgumentException("Invalid symbol " + winnerSymbol);
+		
+		final int index = winnerSymbol == 'X' ? 0 : 1;
+		final String[] tmp = new String[2];
+		tmp[0] = players[index].getId();
+		tmp[1] = players[(index + 1) % 2].getId();
+		
+		return tmp;
+	}
+	
 	public Player[] getObservers() {
 		return observers;
 	}
