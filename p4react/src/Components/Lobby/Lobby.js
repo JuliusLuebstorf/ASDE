@@ -31,7 +31,7 @@ import LocalStorageService from '../../Services/LocalStorageService';
 import ReactDOM from 'react-dom';
 import SignIn from '../Login/SignIn';
 import ServiceClient from '../../Services/ServiceClient';
-
+import { Redirect } from 'react-router-dom'
 
 function Copyright() {
     return (
@@ -140,7 +140,7 @@ export default function Lobby() {
     const [component, setComponent] = React.useState('lobby');
     const [currentUser, setCurrentUser] = React.useState('currentUser');
 
-    
+    const [redirect, setRedirect] = React.useState(false);
 
     const handleDrawerOpen = () => {
       setOpen(true);
@@ -150,11 +150,18 @@ export default function Lobby() {
       setOpen(false);
     };
 
+    function renderRedirect() {
+      if (redirect) {
+        return <Redirect to='/login' />
+      }
+    }
+
     function logout() {
       const localStorageService = LocalStorageService.getService();
       localStorageService.setToken("");
   
-      ReactDOM.render(<SignIn />, document.getElementById('root'));
+      setRedirect(true);
+      //ReactDOM.render(<SignIn />, document.getElementById('root'));
   
       /*ServiceClient.getAxiosInstance(true).get("/logout")
         .then((res) => {
@@ -202,6 +209,7 @@ export default function Lobby() {
         <CssBaseline />
         <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
           <Toolbar className={classes.toolbar}>
+          {renderRedirect()}
             {<IconButton
               edge="start"
               color="inherit"
