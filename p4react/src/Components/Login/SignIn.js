@@ -19,7 +19,7 @@ import ServiceClient from '../../Services/ServiceClient';
 import ForgotPassword from './ForgotPassword';
 import Lobby from '../Lobby/Lobby';
 import Validate from '../../util/Validate';
-
+import { Redirect } from 'react-router-dom'
 
 
 function Copyright() {
@@ -63,6 +63,8 @@ export default function SignIn() {
     const [usernameV, setUsernameV] = React.useState(false);
     const [passV, setPassV] = React.useState(false);
 
+    const [redirect, setRedirect] = React.useState(false);
+
     /*var query = null;
     try {
         const location = useLocation();
@@ -84,6 +86,12 @@ export default function SignIn() {
         setPass(e.target.value);
 
     }*/
+
+    function renderRedirect() {
+        if (redirect) {
+          return <Redirect to='/homepage' />
+        }
+      }
 
     function submit() {
 
@@ -114,7 +122,8 @@ export default function SignIn() {
                 localStorageService.setToken(response.data);
 
                 if (response.status === 200) {
-                    ReactDOM.render(<Lobby />, document.getElementById('root'));
+                    setRedirect(true);
+                    //ReactDOM.render(<Lobby />, document.getElementById('root'));
                 }
 
             }).catch(function (error) {
@@ -157,6 +166,9 @@ export default function SignIn() {
                 <Typography component="h4" variant="h10" color='error'>
                     {msg}
                 </Typography>
+
+                {renderRedirect()}
+
                 <form /*action="http://localhost:8080/perform_login"*/ /*noValidate autoComplete="off" method="get" onSubmit={submit}*/>
                     <TextField
 
