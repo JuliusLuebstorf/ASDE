@@ -7,14 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import asde.proj4.security.dao.UserPlayerDAO;
 import asde.proj4.security.domain.UserPlayer;
-import asde.proj4.security.util.LeaderboardSorter;
 
 @Service
 public class LeaderboardService {
@@ -28,10 +26,8 @@ public class LeaderboardService {
 	public String[] displayLeaderboard(String gameType) {
 		
 		if (userPlayerDAO.findAll() != null) {
-			
-			
+					
 			playerList = userPlayerDAO.findAll();
-			System.out.println(playerList.size());
 			
 			HashMap<String, Integer> userMap = new HashMap<String, Integer>();
 			
@@ -40,34 +36,28 @@ public class LeaderboardService {
 				System.out.println(playerList.get(i).getTicTacToeScore() + playerList.get(i).getUsername());
 			}
 			
-			Set<Entry<String, Integer>> entries = userMap.entrySet();
+			Set<Entry<String, Integer>> userSet = userMap.entrySet();
 			
 			Comparator<Entry<String, Integer>> comparator = new Comparator<Entry<String, Integer>>() {
-	            
 	            @Override
-	            public int compare(Entry<String, Integer> e1, Entry<String, Integer> e2) {
-	                Integer v1 = e1.getValue();
-	                Integer v2 = e2.getValue();
-	                return v2.compareTo(v1);
+	            public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
+	                Integer var1 = entry1.getValue();
+	                Integer var2 = entry2.getValue();
+	                return var2.compareTo(var1);
 	            }
 	        };
 	        
-	        List<Entry<String, Integer>> entryList = new ArrayList<Entry<String, Integer>>(entries);
+	        List<Entry<String, Integer>> entryList = new ArrayList<Entry<String, Integer>>(userSet);
 	        
 	        Collections.sort(entryList, comparator);
-			
-
+		
 			ArrayList<String > leaderArray = new ArrayList<String>();
 			
 			for(Entry<String, Integer> entry:entryList){
 				leaderArray.add(entry.getKey());
 	        }
 			
-			System.out.println(leaderArray);
-			
 			leaderList = leaderArray.toArray(new String[playerList.size()]);
-			
-			System.out.println(leaderList.toString() + "leaderlist");
 			
 			return leaderList; 
 		
