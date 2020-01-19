@@ -21,7 +21,7 @@ public class LeaderboardSorter implements Comparator<UserPlayer>
     public int compare(UserPlayer player1, UserPlayer player2) {
     	
     	if (gameType == "TicTacToe") {
-    		return player1.getTicTacToeScore().compareTo(player2.getTicTacToeScore());
+    		return player2.getTicTacToeScore().compareTo(player1.getTicTacToeScore());
     	} else {
     		return 0;
     	}
