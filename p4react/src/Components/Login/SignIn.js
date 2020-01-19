@@ -89,7 +89,8 @@ export default function SignIn() {
 
     function renderRedirect() {
         if (redirect) {
-          return <Redirect to='/homepage' />
+            window.location.assign('http://localhost:3000/homepage');
+         // return <Redirect to='/homepage' />
         }
       }
 
