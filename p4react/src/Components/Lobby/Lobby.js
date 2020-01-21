@@ -178,7 +178,23 @@ export default function Lobby() {
   
     }
 
-    
+    function updateScoretoZero() {
+      ServiceClient.getAxiosInstance().get("/deleteUsersScores")
+      .then(function (response) {
+        console.log(response.data);
+        console.log(response.status);
+  
+        
+        if (response.status === 200) {
+          alert("It was updated the scores to zero in all the users");
+        }
+  
+    }).catch(function (error) {
+        console.log(error);
+        alert("dio algun bateo, revisar despues");
+    })
+    }
+
 
     useEffect(() => {
 
@@ -223,6 +239,9 @@ export default function Lobby() {
             <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             {currentUser} Welcome to Game Lobby
             </Typography>
+            <Fab variant="extended" color="primary" onClick={updateScoretoZero}>              
+                Update Score to Zero
+            </Fab>
             <Fab variant="extended" color="primary"  /*href="http://localhost:8080/logout"*/ onClick={logout}>
               <ExitToAppIcon />
                 Logout

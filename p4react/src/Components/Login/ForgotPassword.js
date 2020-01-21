@@ -13,10 +13,11 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import ReactDOM from 'react-dom';
-import CreateUser from './CreateUser';
 import SignUp from './SignUp';
 import SignIn from './SignIn';
 import icon from '../../resources/icons/Tic-Tac-Toe-Game-256.png';
+import Copyright from '../General/Copyright';
+
 import {
     useLocation
 } from "react-router-dom";
@@ -25,6 +26,7 @@ import UpdatePassword from './UpdatePassword';
 import ServiceClient from '../../Services/ServiceClient';
 import Validate from '../../util/Validate';
 
+/*
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
@@ -35,6 +37,7 @@ function Copyright() {
         </Typography>
     );
 }
+*/
 
 const useStyles = makeStyles(theme => ({
     paper: {

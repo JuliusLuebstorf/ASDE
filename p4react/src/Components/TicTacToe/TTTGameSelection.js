@@ -11,6 +11,7 @@ import GameBoardSP from './GameBoardSP';
 import MatchList from './Multiplayer/MatchList';
 import TTTLeaderboard from './TTTLeaderboard';
 import ServiceClient from '../../Services/ServiceClient';
+import ListBestUser from '../Lobby/ListBestUser';
 
 class TTTGameSelection extends React.Component {
 
@@ -115,8 +116,14 @@ class TTTGameSelection extends React.Component {
             <Card>
                 <TTTLeaderboard first={this.state.first} second={this.state.second} third={this.state.third}/>
             </Card>
-
                 
+            </Grid>
+
+            <Grid item xs={12} md={8} lg={6}>
+
+            <Card>                
+                <ListBestUser/>
+            </Card>
             </Grid>
         </Grid>
         </Container>

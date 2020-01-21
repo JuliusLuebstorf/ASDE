@@ -20,8 +20,9 @@ import ForgotPassword from './ForgotPassword';
 import Lobby from '../Lobby/Lobby';
 import Validate from '../../util/Validate';
 import { Redirect } from 'react-router-dom'
+import Copyright from '../General/Copyright';
 
-
+/*
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
@@ -32,6 +33,7 @@ function Copyright() {
         </Typography>
     );
 }
+*/
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -90,9 +92,9 @@ export default function SignIn() {
     function renderRedirect() {
         if (redirect) {
             window.location.assign('http://localhost:3000/homepage');
-         // return <Redirect to='/homepage' />
+            // return <Redirect to='/homepage' />
         }
-      }
+    }
 
     function submit() {
 
@@ -103,7 +105,7 @@ export default function SignIn() {
         var passT = !Validate.validatePassword(pass);
         setPassV(passT);
 
-        
+
         if (!userT && !passT) {
             const localStorageService = LocalStorageService.getService();
             const querystring = require('querystring');
@@ -186,7 +188,7 @@ export default function SignIn() {
                         autoComplete="username"
                         autoFocus
                         onChange={(e) => setUsername(e.target.value)}
-                        inputProps={{ maxLength: 10 }}                        
+                        inputProps={{ maxLength: 10 }}
                     />
 
                     <TextField
