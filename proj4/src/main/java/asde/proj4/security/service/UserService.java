@@ -11,29 +11,41 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import asde.proj4.security.dao.UserPlayerDAO;
 import asde.proj4.security.domain.UserPlayer;
 
 @Service
-public class UserService implements UserDetailsService{
+public class UserService implements UserDetailsService {
 
 	@Autowired
 	private UserPlayerDAO repo;
-	
-	
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		UserPlayer us = repo.findByUsername(username);
-		
-		if(us == null) throw new UsernameNotFoundException("");
-		
+
+		if (us == null)
+			throw new UsernameNotFoundException("");
+
 		List<GrantedAuthority> roles = new ArrayList<>();
 		roles.add(new SimpleGrantedAuthority("USER"));
-		
+
 		UserDetails userDet = new User(us.getUsername(), us.getPass(), roles);
-		
+
 		return userDet;
+	}
+
+	@Transactional
+	public boolean deleteUsersScores() {
+		try {
+			repo.updateAllScoreToZero();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }

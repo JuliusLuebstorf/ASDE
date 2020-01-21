@@ -222,4 +222,21 @@ public class UserController {
 
 	}
 
+	@CrossOrigin
+	@GetMapping("/deleteUsersScores")
+	public ResponseEntity<?> deleteUsersScores() {
+
+		try {
+			boolean eliminoCorrectamente = userDetailsService.deleteUsersScores();
+
+			if (eliminoCorrectamente) {
+
+				return new ResponseEntity<String>("Se actualizaron todos los scores de usuarios a cero", HttpStatus.OK); // 200
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<Error>(HttpStatus.CONFLICT); // 409 user dont exist
+		}
+		return new ResponseEntity<Error>(HttpStatus.NOT_FOUND); // 404 user dont exist	
+	}
+
 }

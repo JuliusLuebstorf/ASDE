@@ -2,16 +2,21 @@ package asde.proj4.security.domain;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "USERPLAYER")
 public class UserPlayer{
 
 	@Id
 	private String username;
 	private String pass;
 	private String email;
+	
+	@Column(name = "TICTACTOESCORE")
 	private Integer ticTacToeScore;
 	private long lastLoginTime;
 	public UserPlayer(String username, String pass, String email) {

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import asde.proj4.security.dao.UserPlayerDAO;
 import asde.proj4.security.domain.UserPlayer;
+import asde.proj4.security.domain.UserPlayerSimple;
 
 @Service
 public class LeaderboardService {
@@ -84,6 +85,20 @@ public class LeaderboardService {
 			}
 		}
 	}
+	
+	public List<UserPlayer> leaderboardTopList(String gameType) {		
+		
+		 return userPlayerDAO.findTop3ByOrderByTicTacToeScoreDesc();
+		 
+		 //return userPlayerDAO.findAll();
+		
+	}
 
+	
+	public List<UserPlayer> findTop3WithQuery(String gameType) {		
+		
+		 return userPlayerDAO.findTop3WithQuery();	
+		
+	}
 }
 
